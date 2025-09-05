@@ -7,21 +7,31 @@ import { useState } from 'react';
 const links = [
   { href: '/', label: 'Home' },
   { href: '/cards', label: 'Cards' },
-  { href: '/decks', label: 'Decks' }
+  { href: '/decks', label: 'Builder' },
+  { href: '/my-decks', label: 'My Decks' }
 ];
 
 export default function NavBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
-    <header className="border-b border-white/10 backdrop-blur bg-black/30">
-      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+    <header className="border-b border-[color:var(--color-border)] bg-[color:var(--color-bg-elevated)]/80 backdrop-blur">
+      <div className="px-6 py-3 flex items-center justify-between gap-6">
         <Link href="/" className="font-bold tracking-wide text-gradient-brand text-lg">GrimoireML</Link>
         <nav className="hidden md:block">
           <Group gap="sm">
-            {links.map(l => (
-              <Link key={l.href} href={l.href} className={`text-sm ${pathname === l.href ? 'text-white' : 'text-white/70 hover:text-white'}`}>{l.label}</Link>
-            ))}
+            {links.map(l => {
+              const active = pathname === l.href;
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`text-sm px-3 py-1 rounded-md transition-colors ${active ? 'text-white bg-[color:var(--color-bg-sunken)] glow-teal' : 'text-[color:var(--color-text-muted)] hover:text-white hover:bg-[color:var(--color-bg-sunken)]/70'}`}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
           </Group>
         </nav>
         <div className="md:hidden">
@@ -29,7 +39,7 @@ export default function NavBar() {
         </div>
       </div>
       {open && (
-        <div className="md:hidden px-4 pb-3 space-y-2">
+        <div className="md:hidden px-6 pb-3 space-y-2">
           {links.map(l => (
             <Link key={l.href} href={l.href} className={`block text-sm ${pathname === l.href ? 'text-white' : 'text-white/70'}`} onClick={() => setOpen(false)}>{l.label}</Link>
           ))}

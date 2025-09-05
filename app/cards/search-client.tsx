@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { TextInput, Button, Group, Loader, SimpleGrid, Card, Image, Text } from '@mantine/core';
+import { TextInput, Button, Loader, SimpleGrid, Card, Image, Text } from '@mantine/core';
 
 interface LiteCard {
   id: string;

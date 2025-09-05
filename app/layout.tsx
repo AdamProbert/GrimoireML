@@ -1,7 +1,12 @@
 import './globals.css';
+import '@mantine/core/styles.css';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import React from 'react';
 import NavBar from '../components/NavBar';
+import { Exo_2, Inter } from 'next/font/google';
+
+const headingFont = Exo_2({ subsets: ['latin'], variable: '--font-heading', display: 'swap', weight: ['400','500','600','700'] });
+const bodyFont = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
 
 export const metadata = {
   title: 'GrimoireML',
@@ -18,12 +23,13 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
+      <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <MantineProvider defaultColorScheme="dark">
-          <NavBar />
-          <main className="mx-auto max-w-7xl px-4 py-6">
-            {children}
-          </main>
+          <div className="flex flex-col min-h-screen" id="__app-shell">
+            <NavBar />
+            <main className="flex-1 px-6 py-6">{children}</main>
+            <div id="modal-root" />
+          </div>
         </MantineProvider>
       </body>
     </html>
