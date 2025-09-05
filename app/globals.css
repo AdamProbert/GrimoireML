@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0f1115;
+  --foreground: #ffffff;
+  --accent: #4d5ef7;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, #141922 0%, #0f1115 70%);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+.text-gradient-brand {
+  background: linear-gradient(90deg, #4d5ef7, #9da9fd);
+  -webkit-background-clip: text;
+  color: transparent;
+}
