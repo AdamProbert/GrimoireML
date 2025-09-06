@@ -17,6 +17,16 @@ const bodyFont = Inter({ subsets: ['latin'], variable: '--font-body', display: '
 export const metadata = {
   title: 'GrimoireML',
   description: 'AI-assisted Magic: The Gathering deckbuilding & discovery',
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  themeColor: '#111418',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -24,6 +34,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <ColorSchemeScript />
+        {/* Favicon / PWA assets */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="manifest" href="/site.webmanifest" crossOrigin="use-credentials" />
+        <meta name="theme-color" content="#111418" />
       </head>
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <MantineProvider defaultColorScheme="dark">

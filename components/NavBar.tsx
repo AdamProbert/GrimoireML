@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import Heading from './Heading';
 import Logo from './Logo';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -16,8 +15,6 @@ export default function NavBar() {
   return (
     <header className="bg-[color:var(--color-bg-base)]/90 backdrop-blur border-b border-[color:var(--color-border)] shadow-[0_2px_0_0_rgba(255,111,0,0.05)] relative">
       <div className="px-6 py-5 flex items-center justify-between gap-4">
-        {/* Increased vertical padding */}
-        {/* Left cluster: logo + primary nav */}
         <div className="flex items-center gap-2 md:gap-6 min-w-0">
           <Link
             href="/"
@@ -48,7 +45,9 @@ export default function NavBar() {
                 >
                   <span className="relative z-10">{l.label}</span>
                   <span
-                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] w-0 rounded bg-gradient-to-r from-ember via-gold to-ember transition-all duration-300 ${active ? 'w-3/4' : 'group-hover:w-3/4'}`}
+                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] w-0 rounded bg-gradient-to-r from-ember via-gold to-ember transition-all duration-300 ${
+                      active ? 'w-3/4' : 'group-hover:w-3/4'
+                    }`}
                   />
                 </Link>
               );
@@ -71,7 +70,11 @@ export default function NavBar() {
             <Link
               key={l.href}
               href={l.href}
-              className={`block text-sm ${pathname === l.href ? 'text-[color:var(--color-text-primary)] font-medium' : 'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)]'} py-1`}
+              className={`block text-sm ${
+                pathname === l.href
+                  ? 'text-[color:var(--color-text-primary)] font-medium'
+                  : 'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)]'
+              } py-1`}
               onClick={() => setOpen(false)}
             >
               {l.label}
