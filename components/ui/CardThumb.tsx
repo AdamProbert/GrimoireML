@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -21,13 +21,17 @@ export const CardThumb: React.FC<CardThumbProps> = ({
   compact = false,
   highlight,
   onClick,
-  previewOnHover = true
+  previewOnHover = true,
 }) => {
-  const highlightRing = highlight ? 'ring-2 ring-[color:var(--color-accent-primary)] shadow-ember' : '';
+  const highlightRing = highlight
+    ? 'ring-2 ring-[color:var(--color-accent-primary)] shadow-ember'
+    : '';
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const timerRef = useRef<number | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [previewPos, setPreviewPos] = useState<{ top: number; left: number } | null>(null);
+  const [previewPos, setPreviewPos] = useState<{ top: number; left: number } | null>(
+    null
+  );
   const [previewEntered, setPreviewEntered] = useState(false);
   const previewDelay = 100; // ms
 
@@ -47,14 +51,16 @@ export const CardThumb: React.FC<CardThumbProps> = ({
       const desiredWidth = 340; // enlarged preview width
       const desiredHeight = 480; // approximate height for positioning
       // Center enlarged preview over the thumbnail so it "grows" from it
-      let left = rect.left + (rect.width / 2) - (desiredWidth / 2);
-      let top = rect.top + (rect.height / 2) - (desiredHeight / 2);
+      let left = rect.left + rect.width / 2 - desiredWidth / 2;
+      let top = rect.top + rect.height / 2 - desiredHeight / 2;
       // Constrain within viewport with small margin
       const margin = 8;
       if (left < margin) left = margin;
-      if (left + desiredWidth > window.innerWidth - margin) left = window.innerWidth - margin - desiredWidth;
+      if (left + desiredWidth > window.innerWidth - margin)
+        left = window.innerWidth - margin - desiredWidth;
       if (top < margin) top = margin;
-      if (top + desiredHeight > window.innerHeight - margin) top = window.innerHeight - margin - desiredHeight;
+      if (top + desiredHeight > window.innerHeight - margin)
+        top = window.innerHeight - margin - desiredHeight;
       setPreviewPos({ top, left });
       setShowPreview(true);
     }, previewDelay);
@@ -94,7 +100,9 @@ export const CardThumb: React.FC<CardThumbProps> = ({
           </div>
         )}
         {typeof count === 'number' && (
-          <div className="absolute top-1 left-1 rounded bg-[color:var(--color-bg-base)]/70 px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--color-accent-warm)]">{count}×</div>
+          <div className="absolute top-1 left-1 rounded bg-[color:var(--color-bg-base)]/70 px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--color-accent-warm)]">
+            {count}×
+          </div>
         )}
         <div className="absolute inset-x-0 bottom-0 p-1 bg-gradient-to-t from-[color:var(--color-bg-base)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity text-[10px] line-clamp-2 tracking-wide">
           {name}
@@ -103,28 +111,32 @@ export const CardThumb: React.FC<CardThumbProps> = ({
           <span className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-ember via-gold to-ember" />
         )}
       </div>
-      {typeof window !== 'undefined' && showPreview && imageUrl && previewPos && createPortal(
-        <div
-          className="pointer-events-none fixed z-[200] w-[340px] select-none"
-          style={{ top: previewPos.top, left: previewPos.left }}
-        >
+      {typeof window !== 'undefined' &&
+        showPreview &&
+        imageUrl &&
+        previewPos &&
+        createPortal(
           <div
-            className={`relative ring-2 ring-[color:var(--color-accent-primary)] shadow-ember rounded-md overflow-hidden bg-[color:var(--color-bg-elevated)] transition duration-150 ease-out transform origin-center ${previewEntered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.75]'}`}
+            className="pointer-events-none fixed z-[200] w-[340px] select-none"
+            style={{ top: previewPos.top, left: previewPos.left }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imageUrl}
-              alt={name}
-              className="w-full h-auto block"
-              style={{ filter: 'drop-shadow(0 0 4px rgba(255,140,0,0.5))' }}
-            />
-            <div className="absolute inset-x-0 bottom-0 p-2 text-[11px] font-medium bg-gradient-to-t from-black/80 via-black/30 to-transparent">
-              {name}
+            <div
+              className={`relative ring-2 ring-[color:var(--color-accent-primary)] shadow-ember rounded-md overflow-hidden bg-[color:var(--color-bg-elevated)] transition duration-150 ease-out transform origin-center ${previewEntered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.75]'}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt={name}
+                className="w-full h-auto block"
+                style={{ filter: 'drop-shadow(0 0 4px rgba(255,140,0,0.5))' }}
+              />
+              <div className="absolute inset-x-0 bottom-0 p-2 text-[11px] font-medium bg-gradient-to-t from-black/80 via-black/30 to-transparent">
+                {name}
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 };

@@ -47,8 +47,8 @@ export default function CardSearchClient() {
               background: 'var(--color-bg-elevated)',
               color: 'var(--color-text-primary)',
               borderColor: 'var(--color-border)',
-              transition: 'background-color .2s ease, border-color .2s ease'
-            }
+              transition: 'background-color .2s ease, border-color .2s ease',
+            },
           }}
         />
         <button type="submit" disabled={loading} className="btn btn-primary">
@@ -56,9 +56,13 @@ export default function CardSearchClient() {
         </button>
       </form>
       {loading && <Loader />}
-      {error && <Text c="red" size="sm">{error}</Text>}
+      {error && (
+        <Text c="red" size="sm">
+          {error}
+        </Text>
+      )}
       <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-        {results.map(card => (
+        {results.map((card) => (
           <CardThumb
             key={card.id}
             name={card.name}
@@ -68,7 +72,9 @@ export default function CardSearchClient() {
         ))}
       </div>
       {!loading && results.length === 0 && (
-        <Text size="sm" c="dimmed">No results yet. Try a query.</Text>
+        <Text size="sm" c="dimmed">
+          No results yet. Try a query.
+        </Text>
       )}
     </div>
   );

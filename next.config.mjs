@@ -2,13 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    optimizeCss: true
+    optimizeCss: true,
   },
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'cards.scryfall.io' }
-    ]
-  }
+    remotePatterns: [{ protocol: 'https', hostname: 'cards.scryfall.io' }],
+  },
 };
 
 export default nextConfig;

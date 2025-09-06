@@ -6,19 +6,20 @@ import React from 'react';
 import NavBar from '../components/NavBar';
 import { Exo_2, Inter } from 'next/font/google';
 
-const headingFont = Exo_2({ subsets: ['latin'], variable: '--font-heading', display: 'swap', weight: ['400','500','600','700'] });
+const headingFont = Exo_2({
+  subsets: ['latin'],
+  variable: '--font-heading',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
 const bodyFont = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
 
 export const metadata = {
   title: 'GrimoireML',
-  description: 'AI-assisted Magic: The Gathering deckbuilding & discovery'
+  description: 'AI-assisted Magic: The Gathering deckbuilding & discovery',
 };
 
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

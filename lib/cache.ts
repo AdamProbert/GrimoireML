@@ -44,4 +44,7 @@ export class TTLCache<K, V> {
   }
 }
 
-export const scryfallCache = new TTLCache<string, any>({ ttlMs: 1000 * 30, maxEntries: 200 });
+export const scryfallCache = new TTLCache<string, any>({
+  ttlMs: 1000 * 30,
+  maxEntries: 200,
+});

@@ -3,6 +3,6 @@ module.exports = {
   extends: ['next', 'next/core-web-vitals'],
   rules: {
     'prefer-const': 'warn',
-    'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }]
-  }
+    'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+  },
 };
