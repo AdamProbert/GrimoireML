@@ -1,40 +1,58 @@
 # GrimoireML
 
-Early scaffold for an AI-assisted Magic: The Gathering card discovery & deckbuilding web app.
+GrimoireML an AI-assisted Magic: The Gathering card discovery and deckbuilding web application.
 
-## Stack
+This mono-repo contains two runnable components and local orchestration to tie them together:
 
-- Next.js 15 (App Router, TypeScript)
-- React 18
-- Tailwind CSS + custom brand palette
-- Mantine UI (dark mode baseline)
-- Simple in-memory TTL cache for Scryfall searches
+- `backend/` — FastAPI backend (Python) providing API endpoints, image caching, and a place to add DB/vector store integrations.
+- `webapp/` — Next.js (App Router) React frontend for browsing cards and a first-pass deckbuilder UI.
+- `docker-compose.yml` — development compose that wires Postgres, Redis, backend, and frontend for local testing.
 
-## Quick Start
+Quick overview
 
-```bash
-npm install
-npm run dev
-```
+- Frontend: Next.js 15 (TypeScript), React 18, Tailwind CSS, Mantine UI.
+- Backend: FastAPI, Pydantic, async database init (placeholder), simple image proxy and health endpoints.
 
-Then open: http://localhost:3000
+Running locally (recommended)
 
-## Implemented Routes
+1. Start everything with Docker Compose (recommended for local parity):
 
-- `/` – landing page
-- `/cards` – basic card search (calls proxy API)
-- `/decks` – placeholder for future builder
-- `/api/health` – health check
-- `/api/scryfall/cards?q=QUERY` – cached Scryfall proxy returning a lite card list
+   ```bash
+   docker-compose up --build
+   ```
 
-## Next Ideas (Not Yet Implemented)
+2. Services (default ports):
 
-- Testing setup (Vitest + React Testing Library)
-- Persistent caching / DB & vector store
-- Semantic search embeddings + natural language queries
-- Deck builder drag/drop & analytics
-- User accounts & saved decks
+- Frontend: <http://localhost:3000>
+- Backend (FastAPI): <http://localhost:8000> — OpenAPI/Swagger: `/docs`
 
-## Notes
+Notes
 
-This scaffold purposefully keeps logic minimal while establishing a clean foundation for iterative AI + data features.
+- For quick frontend-only development you can run the Next dev server inside `webapp/`:
+
+  ```bash
+  # from repository root
+  cd webapp
+  npm install
+  npm run dev
+  ```
+
+- For backend-only development you can run the FastAPI app inside `backend/`:
+
+  ```bash
+  # from repository root
+  cd backend
+  python -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  uvicorn app.main:app --reload --port 8000
+  ```
+
+Project status
+
+- Minimal prototype with a small set of routes and an in-memory caching pattern; intended as a foundation for adding semantic search, embeddings/vector DB, persisted decks, and richer AI features.
+
+Contributing / Next steps
+
+- Add unit and integration tests (frontend + backend), CI, and improved documentation for environment variables and deployment.
+- Integrate an embeddings provider and a vector database to enable semantic card search and AI-driven deck suggestions.
