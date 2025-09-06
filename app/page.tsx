@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Text, Button, Group } from '@mantine/core';
+import { Text } from '@mantine/core';
 import Heading from '../components/Heading';
 
 export default function HomePage() {
@@ -10,10 +10,10 @@ export default function HomePage() {
         <Text size="lg" c="dimmed">
           Explore Magic: The Gathering cards with semantic search & AI-assisted deckbuilding.
         </Text>
-        <Group justify="center" mt="md">
-          <Button component={Link} href="/cards" size="md" color="brand">Browse Cards</Button>
-          <Button component={Link} href="/decks" variant="outline" size="md">Deck Builder</Button>
-        </Group>
+        <div className="flex justify-center gap-4 mt-6">
+          <Link href="/cards" className="btn btn-primary btn-lg">Browse Cards</Link>
+          <Link href="/my-decks" className="btn btn-primary btn-lg">My Decks</Link>
+        </div>
       </section>
       <section className="grid gap-6 md:grid-cols-3">
         <div className="rounded-lg border border-white/10 p-4 backdrop-blur bg-white/5">

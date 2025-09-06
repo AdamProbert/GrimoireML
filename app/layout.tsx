@@ -1,5 +1,6 @@
-import './globals.css';
 import '@mantine/core/styles.css';
+// Import globals AFTER Mantine so custom overrides win without !important
+import './globals.css';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import React from 'react';
 import NavBar from '../components/NavBar';

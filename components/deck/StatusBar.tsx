@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Badge } from '@mantine/core';
+import { Badge } from '@mantine/core';
 
 export default function StatusBar() {
   return (
@@ -9,8 +9,8 @@ export default function StatusBar() {
         <span>Ready for prompt.</span>
       </div>
       <div className="flex items-center gap-2">
-        <Button size="xs" variant="default" disabled>Save Deck</Button>
-        <Button size="xs" color="cyan" variant="light" disabled>Export</Button>
+  <button className="btn btn-outline btn-sm" disabled>Save Deck</button>
+  <button className="btn btn-primary btn-sm" disabled>Export</button>
       </div>
     </div>
   );

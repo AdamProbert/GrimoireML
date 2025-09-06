@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import { TextInput, Button, Loader, SimpleGrid, Card, Image, Text } from '@mantine/core';
+import { TextInput, Loader, Text } from '@mantine/core';
+import CardThumb from '../../components/ui/CardThumb';
 
 interface LiteCard {
   id: string;
@@ -36,23 +37,36 @@ export default function CardSearchClient() {
   return (
     <div className="space-y-4">
       <form onSubmit={runSearch} className="flex gap-2">
-        <TextInput value={q} onChange={(e) => setQ(e.currentTarget.value)} placeholder="e.g. dragon t:legend" className="flex-1" />
-        <Button type="submit" disabled={loading}>Search</Button>
+        <TextInput
+          value={q}
+          onChange={(e) => setQ(e.currentTarget.value)}
+          placeholder="e.g. dragon t:legend"
+          className="flex-1"
+          styles={{
+            input: {
+              background: 'var(--color-bg-elevated)',
+              color: 'var(--color-text-primary)',
+              borderColor: 'var(--color-border)',
+              transition: 'background-color .2s ease, border-color .2s ease'
+            }
+          }}
+        />
+        <button type="submit" disabled={loading} className="btn btn-primary">
+          {loading ? 'Searching…' : 'Search'}
+        </button>
       </form>
       {loading && <Loader />}
       {error && <Text c="red" size="sm">{error}</Text>}
-      <SimpleGrid cols={{ base: 2, sm: 3, md: 4, lg: 5 }} spacing="sm">
+      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
         {results.map(card => (
-          <Card key={card.id} radius="md" padding="xs" withBorder className="bg-white/5 border-white/10">
-            {card.image && (
-              <Image src={card.image} alt={card.name} radius="sm" h={180} fit="cover" />
-            )}
-            <Text fw={600} size="sm" mt="xs">{card.name}</Text>
-            {card.mana_cost && <Text size="xs" c="dimmed">{card.mana_cost}</Text>}
-            {card.type_line && <Text size="xs" c="dimmed" lineClamp={2}>{card.type_line}</Text>}
-          </Card>
+          <CardThumb
+            key={card.id}
+            name={card.name}
+            imageUrl={card.image}
+            status={card.image ? 'ok' : 'pending'}
+          />
         ))}
-      </SimpleGrid>
+      </div>
       {!loading && results.length === 0 && (
         <Text size="sm" c="dimmed">No results yet. Try a query.</Text>
       )}

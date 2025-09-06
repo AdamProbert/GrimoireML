@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { listDecks, addDeck, DeckData } from '../../lib/deckStore';
 import Heading from '../Heading';
 import { parseDeckList } from '../../lib/decklist';
-import { Button, Modal, TextInput, Textarea, Alert, Card, Badge, Group } from '@mantine/core';
+import { Modal, TextInput, Textarea, Alert, Card, Badge, Group } from '@mantine/core';
 import Link from 'next/link';
 
 export default function DeckLibrary() {
@@ -41,17 +41,17 @@ export default function DeckLibrary() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
   <Heading level={1} className="text-xl">My Decks</Heading>
-        <Button size="sm" color="cyan" onClick={() => setOpen(true)}>New Deck</Button>
+  <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>New Deck</button>
       </div>
       {items.length === 0 && (
-  <Alert color="cyan" variant="light" title="No Decks Yet">Create your first deck by clicking &quot;New Deck&quot; and optionally paste a card list.</Alert>
+  <Alert color="orange" variant="light" title="No Decks Yet">Create your first deck by clicking &quot;New Deck&quot; and optionally paste a card list.</Alert>
       )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map(d => (
-          <Card key={d.id} withBorder className="panel glow-teal-hover p-4 flex flex-col gap-2 cursor-pointer" component={Link} href={`/decks/${d.id}`}>
+      <Card key={d.id} withBorder className="panel glow-primary-hover p-4 flex flex-col gap-2 cursor-pointer" component={Link} href={`/decks/${d.id}`}>
             <div className="flex items-center justify-between">
               <Heading level={2} className="text-sm truncate" title={d.name}>{d.name}</Heading>
-              <Badge size="xs" variant="outline" color="cyan">{d.cards.reduce((a,c)=>a+c.count,0)}</Badge>
+        <Badge size="xs" variant="outline" color="orange">{d.cards.reduce((a,c)=>a+c.count,0)}</Badge>
             </div>
             <div className="text-[11px] text-[color:var(--color-text-subtle)] flex flex-wrap gap-1">
               {d.cards.slice(0,6).map(c => (
@@ -90,7 +90,7 @@ export default function DeckLibrary() {
               </ul>
             </Alert>
           )}
-          <Button disabled={!!errors.length && rawList.trim().length>0} onClick={handleSubmit} color="cyan">Create Deck</Button>
+          <button className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled={!!errors.length && rawList.trim().length>0} onClick={handleSubmit}>Create Deck</button>
         </div>
       </Modal>
     </div>

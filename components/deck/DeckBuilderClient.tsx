@@ -2,7 +2,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getDeck, DeckData } from '../../lib/deckStore';
 import Heading from '../Heading';
-import { Loader, Alert, Badge, Button } from '@mantine/core';
+import { Loader, Alert } from '@mantine/core';
+import DeckListItem from './DeckListItem';
+import CardThumb from '../ui/CardThumb';
 
 interface CardImageInfo {
   name: string;
@@ -80,40 +82,25 @@ export default function DeckBuilderClient({ deckId }: Props) {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button size="xs" variant="default" component="a" href="/my-decks">Back</Button>
-          <Button size="xs" color="cyan" variant="light" disabled>Save</Button>
+          <a href="/my-decks" className="btn btn-outline btn-sm">Back</a>
+          <button className="btn btn-primary btn-sm" disabled>Save</button>
         </div>
       </div>
       <div className="grid gap-6" style={{ gridTemplateColumns: '260px 1fr 320px' }}>
         <div className="panel p-3 h-[70vh] overflow-y-auto scroll-y">
           <Heading level={3} className="text-sm mb-2">Deck List</Heading>
-          <ul className="space-y-1 text-xs">
-            {deck.cards.map(c => (
-              <li key={c.name} className="flex items-center justify-between gap-2">
-                <span className="truncate"><span className="text-[color:var(--color-accent-teal)]">{c.count}×</span> {c.name}</span>
-                <Badge size="xs" variant="outline" color="cyan">{cards.find(ci=>ci.name===c.name)?.status === 'ok' ? '✓' : cards.find(ci=>ci.name===c.name)?.status === 'error' ? '!' : '…'}</Badge>
-              </li>
-            ))}
+          <ul className="space-y-1">
+            {deck.cards.map(c => {
+              const st = cards.find(ci=>ci.name===c.name)?.status;
+              return <DeckListItem key={c.name} name={c.name} count={c.count} status={st} />;
+            })}
           </ul>
         </div>
         <div className="panel p-4 h-[70vh] overflow-y-auto scroll-y">
           <Heading level={3} className="text-sm mb-3">Cards</Heading>
           <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
             {cards.map(card => (
-              <div key={card.name} className="relative group rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-sunken)] overflow-hidden hover:glow-teal-hover">
-                {card.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={card.image} alt={card.name} className="w-full h-auto block" loading="lazy" />
-                ) : (
-                  <div className="flex items-center justify-center h-48 text-[10px] text-[color:var(--color-text-subtle)]">
-                    {card.status === 'error' ? 'Error' : 'Loading...'}
-                  </div>
-                )}
-                <div className="absolute top-1 left-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px]">{card.count}×</div>
-                <div className="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity text-[10px] line-clamp-2">
-                  {card.name}
-                </div>
-              </div>
+              <CardThumb key={card.name} name={card.name} imageUrl={card.image} count={deck.cards.find(c=>c.name===card.name)?.count} status={card.status} />
             ))}
           </div>
         </div>

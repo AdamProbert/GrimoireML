@@ -1,7 +1,8 @@
 "use client";
 import { useState } from 'react';
 import Heading from '../Heading';
-import { Textarea, Button, Badge, Group } from '@mantine/core';
+import { Textarea, Group } from '@mantine/core';
+import TagChip from '../ui/TagChip';
 
 const quickFilters = [
   { label: 'Aggro', value: 'aggro' },
@@ -25,13 +26,17 @@ export default function PromptPanel() {
         />
         <Group gap={6} mt={8} wrap="wrap">
           {quickFilters.map(f => (
-            <Badge key={f.value} variant="outline" color="cyan" className="cursor-pointer hover:glow-teal" onClick={() => setPrompt(p => p ? p + ' ' + f.label : f.label)}>{f.label}</Badge>
+            <TagChip
+              key={f.value}
+              label={f.label}
+              onClick={() => setPrompt(p => p ? p + ' ' + f.label : f.label)}
+            />
           ))}
         </Group>
       </div>
       <div className="mt-auto flex gap-2">
-        <Button fullWidth size="xs" color="cyan" variant="light" disabled={!prompt.trim()}>Run Prompt</Button>
-        <Button fullWidth size="xs" variant="default" disabled>History</Button>
+  <button className="btn btn-primary btn-sm w-full disabled:opacity-50" disabled={!prompt.trim()}>Run Prompt</button>
+  <button className="btn btn-outline btn-sm w-full" disabled>History</button>
       </div>
     </div>
   );

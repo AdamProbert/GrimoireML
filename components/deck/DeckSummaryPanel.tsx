@@ -1,4 +1,5 @@
 import Heading from '../Heading';
+import StatRow from '../ui/StatRow';
 
 export default function DeckSummaryPanel() {
   return (
@@ -9,18 +10,16 @@ export default function DeckSummaryPanel() {
           <div className="uppercase tracking-wide mb-1 text-[10px] text-[color:var(--color-text-muted)]">Mana Curve (mock)</div>
           <div className="flex items-end gap-1 h-20">
             {[2,5,7,4,3].map((v,i) => (
-              <div key={i} style={{ height: v * 6 }} className="w-4 bg-[color:var(--color-accent-teal)]/40 rounded-sm" />
+              <div key={i} style={{ height: v * 6 }} className="w-4 rounded-sm bg-[color:var(--color-accent-primary)]/30 border border-[color:var(--color-accent-primary)]/40" />
             ))}
           </div>
         </div>
         <div className="rune-divider" />
-        <div>
+        <div className="space-y-1">
           <div className="uppercase tracking-wide mb-1 text-[10px] text-[color:var(--color-text-muted)]">Planned Stats</div>
-          <ul className="space-y-1">
-            <li>Cards: <span className="text-[color:var(--color-text-primary)]">0/60</span></li>
-            <li>Avg Mana Value: —</li>
-            <li>Colors: —</li>
-          </ul>
+          <StatRow label="Cards" value={<span>0/60</span>} />
+          <StatRow label="Avg MV" value="—" subtle />
+          <StatRow label="Colors" value="—" subtle />
         </div>
         <div className="rune-divider" />
         <div>
