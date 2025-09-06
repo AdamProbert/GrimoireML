@@ -1,7 +1,9 @@
-# GrimoireML
+# Grimoire ML
 
-GrimoireML an AI-assisted Magic: The Gathering card discovery and deckbuilding web application.
+<img src="webapp/assets/gimoire-ml-logo-1000x1000.png" alt="GrimoireML logo" style="width:150px; float:right; margin-left:1rem;" />
 
+Grimoire ML is an AI-assisted Magic: The Gathering card discovery and deckbuilding web application.
+ ---
 This mono-repo contains two runnable components and local orchestration to tie them together:
 
 - `backend/` — FastAPI backend (Python) providing API endpoints, image caching, and a place to add DB/vector store integrations.
