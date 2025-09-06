@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { listDecks, addDeck, DeckData } from '../../lib/deckStore';
+import Heading from '../Heading';
 import { parseDeckList } from '../../lib/decklist';
 import { Button, Modal, TextInput, Textarea, Alert, Card, Badge, Group } from '@mantine/core';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export default function DeckLibrary() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">My Decks</h1>
+  <Heading level={1} className="text-xl">My Decks</Heading>
         <Button size="sm" color="cyan" onClick={() => setOpen(true)}>New Deck</Button>
       </div>
       {items.length === 0 && (
@@ -49,7 +50,7 @@ export default function DeckLibrary() {
         {items.map(d => (
           <Card key={d.id} withBorder className="panel glow-teal-hover p-4 flex flex-col gap-2 cursor-pointer" component={Link} href={`/decks/${d.id}`}>
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold truncate" title={d.name}>{d.name}</h2>
+              <Heading level={2} className="text-sm truncate" title={d.name}>{d.name}</Heading>
               <Badge size="xs" variant="outline" color="cyan">{d.cards.reduce((a,c)=>a+c.count,0)}</Badge>
             </div>
             <div className="text-[11px] text-[color:var(--color-text-subtle)] flex flex-wrap gap-1">

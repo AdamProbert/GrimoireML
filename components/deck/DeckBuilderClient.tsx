@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from 'react';
 import { getDeck, DeckData } from '../../lib/deckStore';
+import Heading from '../Heading';
 import { Loader, Alert, Badge, Button } from '@mantine/core';
 
 interface CardImageInfo {
@@ -70,7 +71,7 @@ export default function DeckBuilderClient({ deckId }: Props) {
     <div className="flex flex-col gap-4 min-h-[calc(100vh-140px)]">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-xl font-semibold mb-1">{deck.name}</h1>
+          <Heading level={1} className="text-xl mb-1">{deck.name}</Heading>
           <div className="flex items-center gap-3 text-[11px] text-[color:var(--color-text-subtle)]">
             <span>{deck.cards.reduce((a,c)=>a+c.count,0)} cards</span>
             <span>|</span>
@@ -85,7 +86,7 @@ export default function DeckBuilderClient({ deckId }: Props) {
       </div>
       <div className="grid gap-6" style={{ gridTemplateColumns: '260px 1fr 320px' }}>
         <div className="panel p-3 h-[70vh] overflow-y-auto scroll-y">
-          <h3 className="text-sm font-semibold mb-2 text-gradient-brand">Deck List</h3>
+          <Heading level={3} className="text-sm mb-2">Deck List</Heading>
           <ul className="space-y-1 text-xs">
             {deck.cards.map(c => (
               <li key={c.name} className="flex items-center justify-between gap-2">
@@ -96,7 +97,7 @@ export default function DeckBuilderClient({ deckId }: Props) {
           </ul>
         </div>
         <div className="panel p-4 h-[70vh] overflow-y-auto scroll-y">
-          <h3 className="text-sm font-semibold mb-3 text-gradient-brand">Cards</h3>
+          <Heading level={3} className="text-sm mb-3">Cards</Heading>
           <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
             {cards.map(card => (
               <div key={card.name} className="relative group rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-sunken)] overflow-hidden hover:glow-teal-hover">
@@ -117,7 +118,7 @@ export default function DeckBuilderClient({ deckId }: Props) {
           </div>
         </div>
         <div className="panel p-4 h-[70vh] overflow-y-auto scroll-y flex flex-col gap-4">
-          <h3 className="text-sm font-semibold text-gradient-brand">Planned Panels</h3>
+          <Heading level={3} className="text-sm">Planned Panels</Heading>
           <p className="text-xs text-[color:var(--color-text-subtle)]">Future: AI suggestions, rationale, curve metrics, tag editing.</p>
         </div>
       </div>

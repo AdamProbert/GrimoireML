@@ -1,7 +1,9 @@
+import Heading from '../Heading';
+
 export default function DeckSummaryPanel() {
   return (
     <div className="panel h-full flex flex-col p-4 gap-4">
-      <h3 className="text-sm font-semibold tracking-wide text-gradient-brand">Summary</h3>
+      <Heading level={3} className="text-sm tracking-wide">Summary</Heading>
       <div className="space-y-3 text-xs text-[color:var(--color-text-subtle)]">
         <div>
           <div className="uppercase tracking-wide mb-1 text-[10px] text-[color:var(--color-text-muted)]">Mana Curve (mock)</div>

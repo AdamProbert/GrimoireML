@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import Heading from '../Heading';
 import { Textarea, Button, Badge, Group } from '@mantine/core';
 
 const quickFilters = [
@@ -15,7 +16,7 @@ export default function PromptPanel() {
   return (
     <div className="panel h-full flex flex-col p-4 gap-4">
       <div>
-        <h3 className="text-sm font-semibold tracking-wide text-gradient-brand mb-2">AI Prompt</h3>
+  <Heading level={3} className="text-sm tracking-wide mb-2">AI Prompt</Heading>
         <Textarea
           minRows={4}
           placeholder="e.g. Build a mono-red burn deck focusing on efficient spells"

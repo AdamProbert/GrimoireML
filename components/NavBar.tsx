@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Heading from './Heading';
 import { usePathname } from 'next/navigation';
 import { Group, Button } from '@mantine/core';
 import { useState } from 'react';
@@ -15,9 +16,11 @@ export default function NavBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
-    <header className="border-b border-[color:var(--color-border)] bg-[color:var(--color-bg-elevated)]/80 backdrop-blur">
+    <header className="border-b border-[color:var(--coloru-border)] bg-[color:var(--color-bg-elevated)]/80 backdrop-blur">
       <div className="px-6 py-3 flex items-center justify-between gap-6">
-        <Link href="/" className="font-bold tracking-wide text-gradient-brand text-lg">GrimoireML</Link>
+        <Link href="/" aria-label="GrimoireML Home">
+          <Heading level={2} className="!m-0 text-lg font-bold tracking-wide">GrimoireML</Heading>
+        </Link>
         <nav className="hidden md:block">
           <Group gap="sm">
             {links.map(l => {
