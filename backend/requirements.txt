@@ -8,3 +8,4 @@ redis==5.0.7
 setuptools==80.9.0
 SQLAlchemy==2.0.32
 asyncpg==0.29.0
+prometheus-client==0.20.0
