@@ -14,7 +14,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(false);
   return (
     <header className="bg-[color:var(--color-bg-base)]/90 backdrop-blur border-b border-[color:var(--color-border)] shadow-[0_2px_0_0_rgba(255,111,0,0.05)] relative">
-      <div className="px-6 py-5 flex items-center justify-between gap-4">
+      <div className="px-6 py-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 md:gap-6 min-w-0">
           <Link
             href="/"
@@ -23,13 +23,13 @@ export default function NavBar() {
             tabIndex={0}
           >
             <Logo
-              size={48}
+              size={64}
               priority
-              className="transition-transform group-hover:scale-[1.04]"
+              className="transition-transform group-hover:scale-[1.05]"
             />
             <span className="sr-only">GrimoireML</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-3">
             {links.map((l) => {
               const active = pathname === l.href;
               return (
@@ -37,7 +37,7 @@ export default function NavBar() {
                   key={l.href}
                   href={l.href}
                   className={[
-                    'group relative inline-flex items-center text-sm font-medium px-2 py-1 transition-colors duration-200',
+                    'group relative inline-flex items-center text-lg font-semibold px-4 py-2.5 rounded-md transition-colors duration-200',
                     active
                       ? 'text-[color:var(--color-text-primary)]'
                       : 'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)]',
@@ -45,7 +45,7 @@ export default function NavBar() {
                 >
                   <span className="relative z-10">{l.label}</span>
                   <span
-                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-0.5 h-[2px] w-0 rounded bg-gradient-to-r from-ember via-gold to-ember transition-all duration-300 ${
+                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-1 h-[3px] w-0 rounded-full bg-gradient-to-r from-ember via-gold to-ember transition-all duration-300 ${
                       active ? 'w-3/4' : 'group-hover:w-3/4'
                     }`}
                   />
@@ -57,7 +57,7 @@ export default function NavBar() {
         {/* Right: mobile menu trigger (placeholder for future user controls) */}
         <div className="md:hidden">
           <button
-            className="relative inline-flex items-center gap-1 rounded-full border border-[color:var(--color-border)]/60 bg-[color:var(--color-bg-elevated)]/40 px-4 py-1.5 text-xs font-medium text-[color:var(--color-text-muted)] shadow-sm backdrop-blur-sm transition hover:text-[color:var(--color-text-primary)] hover:border-gradient-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent-primary)]/60"
+            className="relative inline-flex items-center gap-1.5 rounded-full border border-[color:var(--color-border)]/60 bg-[color:var(--color-bg-elevated)]/50 px-5 py-2 text-sm font-medium text-[color:var(--color-text-muted)] shadow-sm backdrop-blur-sm transition hover:text-[color:var(--color-text-primary)] hover:border-gradient-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent-primary)]/60"
             onClick={() => setOpen((o) => !o)}
           >
             {open ? 'Close' : 'Menu'}
@@ -65,16 +65,16 @@ export default function NavBar() {
         </div>
       </div>
       {open && (
-        <div className="md:hidden px-6 pb-3 space-y-2">
+        <div className="md:hidden px-6 pb-4 space-y-2">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`block text-sm ${
+              className={`block text-base font-medium ${
                 pathname === l.href
-                  ? 'text-[color:var(--color-text-primary)] font-medium'
+                  ? 'text-[color:var(--color-text-primary)]'
                   : 'text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)]'
-              } py-1`}
+              } py-2`}
               onClick={() => setOpen(false)}
             >
               {l.label}
