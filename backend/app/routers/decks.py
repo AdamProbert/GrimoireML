@@ -2,10 +2,11 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..core.db import get_session
 from ..models.deck import Deck, DeckCard
-import time
+from datetime import datetime
 
 
 router = APIRouter(prefix="/decks", tags=["decks"])
@@ -36,7 +37,7 @@ class DeckCardOut(DeckCardIn):
 class DeckOut(BaseModel):
     id: int
     name: str
-    created_at: int
+    created_at: datetime
     cards: List[DeckCardOut]
 
     class Config:
@@ -45,7 +46,9 @@ class DeckOut(BaseModel):
 
 @router.get("/", response_model=List[DeckOut])
 async def list_decks(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Deck).order_by(Deck.id.desc()))
+    # Eager load cards to avoid async lazy-load during response serialization (MissingGreenlet)
+    stmt = select(Deck).options(selectinload(Deck.cards)).order_by(Deck.id.desc())
+    result = await session.execute(stmt)
     decks = result.scalars().unique().all()
     return decks
 
@@ -54,17 +57,23 @@ async def list_decks(session: AsyncSession = Depends(get_session)):
 async def create_deck(
     payload: DeckCreate, session: AsyncSession = Depends(get_session)
 ):
-    deck = Deck(name=payload.name, created_at=int(time.time() * 1000))
+    deck = Deck(name=payload.name)
     for c in payload.cards:
         deck.cards.append(DeckCard(name=c.name, count=c.count))
     session.add(deck)
+    # Flush to assign primary key & persist related rows within the current transaction
+    await session.flush()
+    # Re-select with selectinload so the 'cards' relationship is fully loaded before
+    # FastAPI/Pydantic serialization (avoids MissingGreenlet from async lazy load)
+    stmt = select(Deck).options(selectinload(Deck.cards)).where(Deck.id == deck.id)
+    deck = (await session.execute(stmt)).scalar_one()
     await session.commit()
-    await session.refresh(deck)
     return deck
 
 
 async def _get_deck_or_404(deck_id: int, session: AsyncSession) -> Deck:
-    deck = await session.get(Deck, deck_id)
+    # Use selectinload to ensure cards are loaded prior to Pydantic model conversion
+    deck = await session.get(Deck, deck_id, options=[selectinload(Deck.cards)])
     if not deck:
         raise HTTPException(status_code=404, detail="Deck not found")
     return deck
@@ -86,8 +95,11 @@ async def update_deck(
         deck.cards.clear()
         for c in payload.cards:
             deck.cards.append(DeckCard(name=c.name, count=c.count))
+    await session.flush()
+    # Ensure fully-loaded deck (cards) prior to serialization
+    stmt = select(Deck).options(selectinload(Deck.cards)).where(Deck.id == deck.id)
+    deck = (await session.execute(stmt)).scalar_one()
     await session.commit()
-    await session.refresh(deck)
     return deck
 
 

@@ -1,8 +1,12 @@
+import asyncio
+import logging
+import os
 from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase
-from .config import get_settings
 
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
+
+from .config import get_settings
 
 settings = get_settings()
 
@@ -21,18 +25,14 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 async def init_db() -> None:
-    # Import models so metadata is populated
-    from ..models.deck import Deck, DeckCard  # noqa: F401
-
-    # Retry a few times in case Postgres isn't ready yet (docker startup race)
-    import asyncio
-    import logging
-
     max_attempts = 8
     delay = 1.5
     for attempt in range(1, max_attempts + 1):
         try:
             async with engine.begin() as conn:
+                # Optional destructive reset if env var set (use once, then unset)
+                if os.getenv("RESET_DB", "false").lower() == "true":
+                    await conn.run_sync(Base.metadata.drop_all)
                 await conn.run_sync(Base.metadata.create_all)
             break
         except Exception as e:  # noqa: BLE001

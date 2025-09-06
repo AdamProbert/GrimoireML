@@ -28,7 +28,6 @@ SCRYFALL_CARD_ENDPOINT = "https://api.scryfall.com/cards/"  # + {id}
 
 
 async def fetch_scryfall_image(card_id: str) -> tuple[bytes, str]:
-    # Fetch card JSON then choose an image URL similar to frontend logic
     url = SCRYFALL_CARD_ENDPOINT + card_id
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.get(url)

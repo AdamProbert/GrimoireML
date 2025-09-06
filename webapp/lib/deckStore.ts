@@ -1,5 +1,5 @@
 export interface DeckCard { name: string; count: number }
-export interface DeckData { id: number; name: string; created_at: number; cards: (DeckCard & { id: number })[] }
+export interface DeckData { id: number; name: string; created_at: string; cards: (DeckCard & { id: number })[] }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
