@@ -11,6 +11,7 @@ export interface CardThumbProps {
   highlight?: boolean | 'new' | 'changed';
   onClick?: () => void;
   previewOnHover?: boolean; // show enlarged floating preview on hover (default true)
+  previewDelay?: number; // ms delay before showing preview (default 100)
 }
 
 export const CardThumb: React.FC<CardThumbProps> = ({
@@ -22,6 +23,7 @@ export const CardThumb: React.FC<CardThumbProps> = ({
   highlight,
   onClick,
   previewOnHover = true,
+  previewDelay = 100,
 }) => {
   const highlightRing = highlight
     ? 'ring-2 ring-[color:var(--color-accent-primary)] shadow-ember'
@@ -33,7 +35,7 @@ export const CardThumb: React.FC<CardThumbProps> = ({
     null
   );
   const [previewEntered, setPreviewEntered] = useState(false);
-  const previewDelay = 100; // ms
+  // previewDelay now configurable via prop
 
   const clearTimer = () => {
     if (timerRef.current) {
@@ -85,7 +87,11 @@ export const CardThumb: React.FC<CardThumbProps> = ({
     <>
       <div
         ref={wrapperRef}
-        className={`relative group rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-elevated)]/80 overflow-hidden ${compact ? 'h-40' : ''} ${onClick ? 'cursor-pointer glow-primary-hover' : 'glow-primary-hover'} ${highlightRing}`}
+        className={`relative group rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-elevated)]/80 overflow-hidden ${
+          compact ? 'h-40' : ''
+        } ${
+          onClick ? 'cursor-pointer glow-primary-hover' : 'glow-primary-hover'
+        } ${highlightRing}`}
         onClick={onClick}
         aria-label={name}
         onMouseEnter={handleEnter}
@@ -121,7 +127,9 @@ export const CardThumb: React.FC<CardThumbProps> = ({
             style={{ top: previewPos.top, left: previewPos.left }}
           >
             <div
-              className={`relative ring-2 ring-[color:var(--color-accent-primary)] shadow-ember rounded-md overflow-hidden bg-[color:var(--color-bg-elevated)] transition duration-150 ease-out transform origin-center ${previewEntered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.75]'}`}
+              className={`relative ring-2 ring-[color:var(--color-accent-primary)] shadow-ember rounded-md overflow-hidden bg-[color:var(--color-bg-elevated)] transition duration-150 ease-out transform origin-center ${
+                previewEntered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.75]'
+              }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

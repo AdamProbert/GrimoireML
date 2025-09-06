@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { TextInput, Loader, Text } from '@mantine/core';
 import CardThumb from '../../components/ui/CardThumb';
+import CardGrid from '../../components/ui/CardGrid';
 
 interface LiteCard {
   id: string;
@@ -113,27 +114,27 @@ export default function CardSearchClient() {
           {error}
         </Text>
       )}
-      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-        {results.map((card) => (
-          <CardThumb
-            key={card.id}
-            name={card.name}
-            imageUrl={card.image}
-            status={card.image ? 'ok' : 'pending'}
-          />
-        ))}
-      </div>
+      <CardGrid
+        cards={results.map((card) => ({
+          name: card.name,
+          imageUrl: card.image,
+          status: card.image ? 'ok' : 'pending',
+        }))}
+      />
       {/* sentinel element for infinite scroll */}
       <div ref={sentinelRef} />
       {/* initial search loader */}
       {loading && <Loader />}
       {/* skeleton placeholders while fetching next page */}
       {isFetchingNext && (
-        <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <CardThumb key={`skeleton-${i}`} name={''} status="pending" />
-          ))}
-        </div>
+        <CardGrid
+          enableSettings={false}
+          cards={Array.from({ length: 6 }).map((_, i) => ({
+            name: `skeleton-${i}`,
+            status: 'pending' as const,
+            previewOnHover: false,
+          }))}
+        />
       )}
 
       {/* manual load more fallback / button */}

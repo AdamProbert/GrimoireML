@@ -7,6 +7,7 @@ import { Loader, Alert } from '@mantine/core';
 import DeleteDeckControl from './DeleteDeckControl';
 import DeckListItem from './DeckListItem';
 import CardThumb from '../ui/CardThumb';
+import CardGrid from '../ui/CardGrid';
 
 interface CardImageInfo {
   name: string;
@@ -161,17 +162,14 @@ export default function DeckBuilderClient({ deckId }: Props) {
           <Heading level={3} className="text-sm mb-3">
             Cards
           </Heading>
-          <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-            {cards.map((card) => (
-              <CardThumb
-                key={card.name}
-                name={card.name}
-                imageUrl={card.image}
-                count={deck.cards.find((c) => c.name === card.name)?.count}
-                status={card.status}
-              />
-            ))}
-          </div>
+          <CardGrid
+            cards={cards.map((card) => ({
+              name: card.name,
+              imageUrl: card.image,
+              count: deck.cards.find((c) => c.name === card.name)?.count,
+              status: card.status,
+            }))}
+          />
         </div>
         <div className="panel p-4 h-[70vh] overflow-y-auto scroll-y flex flex-col gap-4">
           <Heading level={3} className="text-sm">
