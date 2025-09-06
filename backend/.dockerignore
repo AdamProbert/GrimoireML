@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pytest_cache/
+.cache/
+
+# Environments
+.env
+.venv
+venv/
+
+# Git
+.git
+.gitignore
+
+# IDE/editor
+.vscode
+.idea
+*.swp
+
+# Tests artifacts
+.htmlcov
+.coverage*
+.pytest_cache
+
+# Byte-compiled / optimized / DLL files
+*$py.class
+
+# Misc
+Dockerfile*
