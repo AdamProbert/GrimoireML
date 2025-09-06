@@ -20,7 +20,9 @@ interface Props {
 
 const fetchCard = async (name: string) => {
   const baseName = name.split('//')[0].trim();
-  const url = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(baseName)}`;
+  const url = `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(
+    baseName
+  )}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Scryfall ${res.status}`);
   const json = await res.json();
@@ -40,19 +42,26 @@ export default function DeckBuilderClient({ deckId }: Props) {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   useEffect(() => {
-    const d = getDeck(deckId);
-    if (d) {
-      setDeck(d);
-      const initial: CardImageInfo[] = d.cards.map((c) => ({
-        name: c.name,
-        count: c.count,
-        image: null,
-        status: 'pending',
-      }));
-      setCards(initial);
-      setProgress({ done: 0, total: initial.length });
-    }
-    setLoading(false);
+    (async () => {
+      const idNum = Number(deckId);
+      if (Number.isNaN(idNum)) {
+        setLoading(false);
+        return;
+      }
+      const d = await getDeck(idNum);
+      if (d) {
+        setDeck(d);
+        const initial: CardImageInfo[] = d.cards.map((c) => ({
+          name: c.name,
+          count: c.count,
+          image: null,
+          status: 'pending',
+        }));
+        setCards(initial);
+        setProgress({ done: 0, total: initial.length });
+      }
+      setLoading(false);
+    })();
   }, [deckId]);
 
   const loadImages = useCallback(async () => {

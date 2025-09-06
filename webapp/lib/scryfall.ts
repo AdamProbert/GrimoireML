@@ -26,11 +26,7 @@ export async function searchCardsLite(query: string): Promise<LiteCard[]> {
   return raw.data.slice(0, 60).map((c: any) => ({
     id: c.id,
     name: c.name,
-    image:
-      c.image_uris?.normal ||
-      c.image_uris?.small ||
-      c.image_uris?.png ||
-      c.card_faces?.[0]?.image_uris?.normal,
+    image: `/api/card-image/${c.id}`,
     mana_cost: c.mana_cost,
     type_line: c.type_line,
   }));
