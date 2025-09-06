@@ -1,8 +1,10 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { getDeck, DeckData } from '../../lib/deckStore';
 import Heading from '../Heading';
 import { Loader, Alert } from '@mantine/core';
+import DeleteDeckControl from './DeleteDeckControl';
 import DeckListItem from './DeckListItem';
 import CardThumb from '../ui/CardThumb';
 
@@ -40,6 +42,7 @@ export default function DeckBuilderClient({ deckId }: Props) {
   const [cards, setCards] = useState<CardImageInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -134,6 +137,7 @@ export default function DeckBuilderClient({ deckId }: Props) {
           <a href="/my-decks" className="btn btn-outline btn-sm">
             Back
           </a>
+          {deck && <DeleteDeckControl deckId={deck.id} deckName={deck.name} />}
           <button className="btn btn-primary btn-sm" disabled>
             Save
           </button>
