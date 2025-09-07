@@ -13,7 +13,7 @@ interface LiteCard {
 
 export default function CardSearchClient() {
   // Natural language prompt
-  const [prompt, setPrompt] = useState('creatures that tutor other creatures in simic');
+  const [prompt, setPrompt] = useState('low cost goblins');
   // Effective Scryfall query currently in use (joined active parts)
   const [effectiveQuery, setEffectiveQuery] = useState<string>('lightning bolt');
   // Loading states
@@ -144,13 +144,28 @@ export default function CardSearchClient() {
           onChange={(e) => setPrompt(e.currentTarget.value)}
           placeholder="e.g. cheap blue or green human creatures under 3 mana sorted by cost"
           className="flex-1"
+          variant="filled"
+          radius="sm"
+          size="md"
           styles={{
             input: {
-              background: 'var(--color-bg-elevated)',
+              background: 'linear-gradient(135deg,#1f1a17 0%, #241810 100%)',
               color: 'var(--color-text-primary)',
-              borderColor: 'var(--color-border)',
-              transition: 'background-color .2s ease, border-color .2s ease',
+              border: '1px solid rgba(255,140,0,0.35)',
+              boxShadow:
+                '0 0 0 1px rgba(255,120,0,0.25), 0 0 8px -2px rgba(255,90,0,0.4) inset',
+              transition:
+                'border-color .18s ease, box-shadow .18s ease, background .25s ease',
             },
+            wrapper: { position: 'relative' },
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.boxShadow =
+              '0 0 0 1px rgba(255,160,0,0.55), 0 0 10px 0 rgba(255,90,0,0.6) inset';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow =
+              '0 0 0 1px rgba(255,120,0,0.25), 0 0 8px -2px rgba(255,90,0,0.4) inset';
           }}
         />
         <button
@@ -161,14 +176,14 @@ export default function CardSearchClient() {
           {parsing ? 'Parsing…' : 'Parse & Search'}
         </button>
       </form>
-      {(loading || parsing) && <Loader />}
+      {(loading || parsing) && <Loader color="orange" />}
       {error && (
         <Text c="red" size="sm">
           {error}
         </Text>
       )}
       {parseWarnings.length > 0 && (
-        <Text size="xs" c="yellow">
+        <Text size="xs" c="orange">
           Warnings: {parseWarnings.join(', ')}
         </Text>
       )}
@@ -187,7 +202,30 @@ export default function CardSearchClient() {
           >
             <div className="flex flex-wrap gap-2">
               {allParts.map((p) => (
-                <Chip key={p} value={p} variant="filled" radius="sm">
+                <Chip
+                  key={p}
+                  value={p}
+                  variant="filled"
+                  radius="sm"
+                  color={activeParts.includes(p) ? 'orange' : 'gray'}
+                  styles={{
+                    root: {
+                      background: activeParts.includes(p)
+                        ? 'linear-gradient(135deg,#ff7a18 0%,#ff521b 40%,#ff2d55 100%)'
+                        : 'rgba(120,120,120,0.15)',
+                      color: activeParts.includes(p) ? '#fff' : '#ddd',
+                      border: activeParts.includes(p)
+                        ? '1px solid rgba(255,140,0,0.65)'
+                        : '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: activeParts.includes(p)
+                        ? '0 0 6px -1px rgba(255,100,0,0.7)'
+                        : 'none',
+                      cursor: 'pointer',
+                      transition: 'all .18s ease',
+                    },
+                    checkIcon: { color: '#fff' },
+                  }}
+                >
                   {p}
                 </Chip>
               ))}
@@ -205,7 +243,7 @@ export default function CardSearchClient() {
       {/* sentinel element for infinite scroll */}
       <div ref={sentinelRef} />
       {/* initial search loader */}
-      {loading && <Loader />}
+      {loading && <Loader color="orange" />}
       {/* skeleton placeholders while fetching next page */}
       {isFetchingNext && (
         <CardGrid

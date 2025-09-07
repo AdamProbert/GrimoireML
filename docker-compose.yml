@@ -82,7 +82,7 @@ services:
       - ./webapp:/app
       - /app/node_modules
     environment:
-      NEXT_PUBLIC_API_BASE: http://backend:8000
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
     command: npm run dev
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
