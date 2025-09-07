@@ -26,6 +26,10 @@ export const metadata = {
     ],
     apple: '/apple-touch-icon.png',
   },
+};
+
+// Next.js now expects themeColor in a separate viewport export
+export const viewport = {
   themeColor: '#111418',
 };
 
@@ -40,7 +44,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/site.webmanifest" crossOrigin="use-credentials" />
-        <meta name="theme-color" content="#111418" />
       </head>
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <MantineProvider defaultColorScheme="dark">
