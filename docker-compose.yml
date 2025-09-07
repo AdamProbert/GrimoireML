@@ -12,9 +12,8 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
-      timeout: 5s
+      timeout: 3s
       retries: 5
-      start_period: 10s
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -35,10 +34,9 @@ services:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/grimoire
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+      interval: 10s
+      timeout: 3s
+      retries: 5
     depends_on:
       redis:
         condition: service_healthy
@@ -63,7 +61,6 @@ services:
       - /app/node_modules
     environment:
       NEXT_PUBLIC_API_BASE: http://backend:8000
-      # NODE_ENV intentionally left as development (set in Dockerfile) for fast refresh / React Fast Refresh
     command: npm run dev
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
@@ -119,10 +116,9 @@ services:
       - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
+      interval: 10s
       timeout: 3s
       retries: 5
-      start_period: 5s
 
 volumes:
   redis-data:
