@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { TextInput, Loader, Text } from '@mantine/core';
-import CardThumb from '../../components/ui/CardThumb';
+import { TextInput, Loader, Text, Chip } from '@mantine/core';
 import CardGrid from '../../components/ui/CardGrid';
 
 interface LiteCard {
@@ -13,8 +12,13 @@ interface LiteCard {
 }
 
 export default function CardSearchClient() {
-  const [q, setQ] = useState('lightning bolt');
-  const [loading, setLoading] = useState(false);
+  // Natural language prompt
+  const [prompt, setPrompt] = useState('creatures that tutor other creatures in simic');
+  // Effective Scryfall query currently in use (joined active parts)
+  const [effectiveQuery, setEffectiveQuery] = useState<string>('lightning bolt');
+  // Loading states
+  const [loading, setLoading] = useState(false); // Scryfall search loading
+  const [parsing, setParsing] = useState(false); // NL parsing loading
   const [results, setResults] = useState<LiteCard[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [nextPage, setNextPage] = useState<string | null>(null);
@@ -22,6 +26,11 @@ export default function CardSearchClient() {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [isFetchingNext, setIsFetchingNext] = useState(false);
+
+  // Parsed parts
+  const [allParts, setAllParts] = useState<string[]>([]);
+  const [activeParts, setActiveParts] = useState<string[]>([]); // subset of allParts currently enabled
+  const [parseWarnings, setParseWarnings] = useState<string[]>([]);
 
   // helper to fetch a page (either initial q or next_page)
   const fetchPage = useCallback(
@@ -31,7 +40,7 @@ export default function CardSearchClient() {
         if (opts.next) params.set('next', opts.next);
         else if (opts.q) params.set('q', opts.q);
         const res = await fetch(`/api/scryfall/cards?${params.toString()}`);
-        if (!res.ok) throw new Error('Search failed');
+        if (!res.ok) throw new Error('Querying scryfall failed', { cause: res.status });
         const json = await res.json();
         const data: LiteCard[] = json.data || [];
         if (opts.append) {
@@ -50,19 +59,59 @@ export default function CardSearchClient() {
     []
   );
 
-  async function runSearch(e?: React.FormEvent) {
-    e?.preventDefault();
-    if (!q.trim()) return;
-    setLoading(true);
-    setError(null);
-    try {
-      await fetchPage({ q: q.trim(), append: false });
-    } catch (err: any) {
-      setError(err.message || 'Error');
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Helper: recompute effective query string from active parts & perform search
+  const runPartsSearch = useCallback(
+    async (parts: string[]) => {
+      const q = parts.join(' ').trim();
+      setEffectiveQuery(q);
+      if (!q) {
+        setResults([]);
+        setHasMore(false);
+        setNextPage(null);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        await fetchPage({ q, append: false });
+      } catch (err: any) {
+        setError(err.message || 'Error');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchPage]
+  );
+  // Parse natural language prompt -> query parts, then run initial Scryfall search
+  const runParseAndSearch = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault();
+      if (!prompt.trim()) return;
+      setParsing(true);
+      setError(null);
+      setParseWarnings([]);
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_QUERY_API_URL || 'http://localhost:8080';
+        const resp = await fetch(`${baseUrl}/nlq/parse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: prompt.trim() }),
+        });
+        if (!resp.ok) throw new Error(`Parse failed (${resp.status})`);
+        const json = await resp.json();
+        const parts: string[] = json.query_parts || [];
+        setAllParts(parts);
+        setActiveParts(parts); // all on by default
+        setParseWarnings(json.warnings || []);
+        await runPartsSearch(parts);
+      } catch (err: any) {
+        setError(err.message || 'Error');
+      } finally {
+        setParsing(false);
+      }
+    },
+    [prompt, runPartsSearch]
+  );
 
   // load next page
   const loadNext = useCallback(async () => {
@@ -89,11 +138,11 @@ export default function CardSearchClient() {
 
   return (
     <div className="space-y-4">
-      <form onSubmit={runSearch} className="flex gap-2">
+      <form onSubmit={runParseAndSearch} className="flex gap-2 items-start">
         <TextInput
-          value={q}
-          onChange={(e) => setQ(e.currentTarget.value)}
-          placeholder="e.g. dragon t:legend"
+          value={prompt}
+          onChange={(e) => setPrompt(e.currentTarget.value)}
+          placeholder="e.g. cheap blue or green human creatures under 3 mana sorted by cost"
           className="flex-1"
           styles={{
             input: {
@@ -104,15 +153,47 @@ export default function CardSearchClient() {
             },
           }}
         />
-        <button type="submit" disabled={loading} className="btn btn-primary">
-          {loading ? 'Searching…' : 'Search'}
+        <button
+          type="submit"
+          disabled={parsing || loading}
+          className="btn btn-primary whitespace-nowrap"
+        >
+          {parsing ? 'Parsing…' : 'Parse & Search'}
         </button>
       </form>
-      {loading && <Loader />}
+      {(loading || parsing) && <Loader />}
       {error && (
         <Text c="red" size="sm">
           {error}
         </Text>
+      )}
+      {parseWarnings.length > 0 && (
+        <Text size="xs" c="yellow">
+          Warnings: {parseWarnings.join(', ')}
+        </Text>
+      )}
+      {allParts.length > 0 && (
+        <div className="space-y-2">
+          <Text size="sm" c="dimmed">
+            Query parts (toggle to refine):
+          </Text>
+          <Chip.Group
+            multiple
+            value={activeParts}
+            onChange={(vals) => {
+              setActiveParts(vals as string[]);
+              void runPartsSearch(vals as string[]);
+            }}
+          >
+            <div className="flex flex-wrap gap-2">
+              {allParts.map((p) => (
+                <Chip key={p} value={p} variant="filled" radius="sm">
+                  {p}
+                </Chip>
+              ))}
+            </div>
+          </Chip.Group>
+        </div>
       )}
       <CardGrid
         cards={results.map((card) => ({

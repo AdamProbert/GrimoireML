@@ -14,8 +14,8 @@ export default function CardsPage() {
         {/* Right-side action slot (mirrors My Decks toolbar layout) */}
       </div>
       <Text size="sm" c="dimmed" className="max-w-prose">
-        Type a query to search Scryfall (name, type, oracle text). Cached server-side
-        briefly.
+        Enter a natural language prompt; we parse it into toggleable query chips and
+        search Scryfall.
       </Text>
       <CardSearchClient />
     </div>
