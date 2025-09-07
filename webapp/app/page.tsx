@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Text } from '@mantine/core';
 import Heading from '../components/Heading';
 import Image from 'next/image';
-import titleImage from '../assets/grimoire-title-2kx2k.png';
+import titleImage from '../assets/grimoire-title-1kx1k.png';
 
 export default function HomePage() {
   return (
