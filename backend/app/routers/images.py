@@ -25,20 +25,28 @@ _circuit_open_until: float = 0.0
 IMAGE_REQUESTS = Counter(
     "image_requests_total",
     "Image requests",
-    ["source", "outcome"],  # source: cache, origin; outcome: hit, miss, error
+    ["source", "outcome"],
+    namespace="grimoire",
+    subsystem="backend",
 )
 IMAGE_FETCH_LATENCY = Histogram(
     "image_origin_fetch_latency_seconds",
     "Latency for origin fetch (metadata + image)",
     buckets=(0.1, 0.25, 0.5, 1, 2, 5, 10),
+    namespace="grimoire",
+    subsystem="backend",
 )
 IMAGE_CACHE_BYTES = Gauge(
     "image_cache_bytes_last",
     "Size of last image cached in bytes",
+    namespace="grimoire",
+    subsystem="backend",
 )
 IMAGE_CIRCUIT_STATE = Gauge(
     "image_circuit_open",
     "1 if circuit breaker open else 0",
+    namespace="grimoire",
+    subsystem="backend",
 )
 
 

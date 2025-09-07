@@ -11,6 +11,30 @@ from __future__ import annotations
 from typing import List
 import re
 from .models import QueryIR
+from prometheus_client import Counter, Histogram
+
+# Metrics
+COMPILE_COUNT = Counter(
+    "compile_attempts_total",
+    "Total QueryIR -> Scryfall compile attempts",
+    ["outcome"],  # outcome: success, empty
+    namespace="grimoire",
+    subsystem="query",
+)
+COMPILE_WARNINGS = Counter(
+    "compile_warnings_total",
+    "Total warnings emitted by compiler",
+    ["category"],
+    namespace="grimoire",
+    subsystem="query",
+)
+COMPILE_LATENCY = Histogram(
+    "compile_latency_seconds",
+    "Latency of compiling QueryIR to Scryfall query string",
+    buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1),
+    namespace="grimoire",
+    subsystem="query",
+)
 
 
 def _quote_token(tok: str) -> str:
@@ -28,6 +52,18 @@ VALID_COLORS = {"W", "U", "B", "R", "G"}
 SET_CODE_RE = re.compile(r"^[A-Za-z0-9]{2,5}$")
 
 
+def _categorize_warning(w: str) -> str:
+    if "empty" in w:
+        return "empty"
+    if "invalid" in w or "unknown" in w:
+        return "invalid"
+    if "broad" in w:
+        return "broad"
+    if "skipping" in w:
+        return "skipped"
+    return "other"
+
+
 def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
     """Compile IR into a Scryfall syntax query string and collect warnings.
 
@@ -38,6 +74,10 @@ def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
     """
     parts: List[str] = []
     warnings: List[str] = []
+
+    import time
+
+    start = time.perf_counter()
 
     ent = ir.entity
     if not (
@@ -159,4 +199,11 @@ def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
                 "very broad query (only one primary filter); consider adding more constraints"
             )
 
-    return " ".join(parts).strip(), warnings
+    query = " ".join(parts).strip()
+    # Metrics collection
+    outcome = "empty" if not query else "success"
+    COMPILE_COUNT.labels(outcome).inc()
+    for w in warnings:
+        COMPILE_WARNINGS.labels(_categorize_warning(w)).inc()
+    COMPILE_LATENCY.observe(time.perf_counter() - start)
+    return query, warnings

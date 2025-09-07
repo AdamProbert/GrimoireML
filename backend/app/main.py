@@ -36,15 +36,19 @@ app.include_router(decks.router)
 
 # Basic metrics
 REQUEST_COUNT = Counter(
-    "app_requests_total",
+    "requests_total",
     "Total HTTP requests",
     ["method", "path", "status"],
+    namespace="grimoire",
+    subsystem="backend",
 )
 REQUEST_LATENCY = Histogram(
-    "app_request_latency_seconds",
+    "request_latency_seconds",
     "Request latency seconds",
     ["method", "path"],
     buckets=(0.05, 0.1, 0.25, 0.5, 1, 2, 5),
+    namespace="grimoire",
+    subsystem="backend",
 )
 
 
