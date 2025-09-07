@@ -57,9 +57,14 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
+    # Hot reload development setup: bind mount source; keep node_modules inside container layer
+    volumes:
+      - ./webapp:/app
+      - /app/node_modules
     environment:
       NEXT_PUBLIC_API_BASE: http://backend:8000
-      NODE_ENV: production
+      # NODE_ENV intentionally left as development (set in Dockerfile) for fast refresh / React Fast Refresh
+    command: npm run dev
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
 

@@ -18,13 +18,15 @@ Quick overview
 
 Running locally (recommended)
 
-1. Start everything with Docker Compose (recommended for local parity):
+1. Start everything with Docker Compose (hot reload for frontend + backend auto-reload):
 
-   ```bash
-   docker-compose up --build
-   ```
+  ```bash
+  docker compose up --build
+  ```
 
-2. Services (default ports):
+  The frontend service now mounts the local `webapp/` directory into the container and keeps an internal `node_modules` volume. This enables instant hot reload (React Fast Refresh) while still using a containerized environment consistent across machines.
+
+1. Services (default ports):
 
 - Frontend: <http://localhost:3000>
 - Backend (FastAPI): <http://localhost:8000> — OpenAPI/Swagger: `/docs`
@@ -59,3 +61,4 @@ Contributing / Next steps
 
 - Add unit and integration tests (frontend + backend), CI, and improved documentation for environment variables and deployment.
 - Integrate an embeddings provider and a vector database to enable semantic card search and AI-driven deck suggestions.
+- Introduce a production-optimized frontend image (multi-stage build) distinct from the dev-focused hot reload image now used in `docker compose`.

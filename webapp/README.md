@@ -4,6 +4,14 @@ Frontend UI built with Next.js (App Router), TypeScript, Tailwind CSS and Mantin
 
 Quick start
 
+Option A: Docker Compose (recommended for consistent dev environment + hot reload)
+
+```bash
+docker compose up --build frontend
+```
+
+Option B: Local node (no containers)
+
 ```bash
 cd webapp
 npm install
@@ -35,9 +43,11 @@ Env / Integration notes
 
 - When running in Docker Compose the frontend expects the backend to be reachable at `http://backend:8000` (set via `NEXT_PUBLIC_API_BASE`).
 - For local dev, the webapp proxies to its internal API routes which in turn may call external services (Scryfall).
+- The development Dockerfile plus `docker-compose.yml` bind mount `./webapp` into `/app` and keep `node_modules` in an anonymous volume so that hot reload works while avoiding host/OS module churn.
 
 Next steps
 
 - Add frontend tests (Vitest + React Testing Library recommended)
 - Improve the deckbuilder UI and persist decks to the backend
 - Add authentication and user-scoped deck storage
+- Create a production build Dockerfile variant (multi-stage) separate from the current dev-focused image.

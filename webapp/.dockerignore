@@ -5,8 +5,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Build output
-.next
+# Build output (keep .next except cache for better layer reuse in prod build stage)
+.next/cache
 out
 build
 
@@ -24,4 +24,6 @@ build
 *.swp
 
 # Misc
-Dockerfile*
+coverage
+*.log
+*.tsbuildinfo
