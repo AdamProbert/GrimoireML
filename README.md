@@ -5,18 +5,26 @@
 Grimoire ML is an AI-assisted Magic: The Gathering card discovery and deckbuilding web application.
 
 ---
-This mono-repo contains two runnable components and local orchestration to tie them together:
+This mono-repo contains three runnable services plus local orchestration:
 
-- `backend/` — FastAPI backend (Python) providing API endpoints, image caching, and a place to add DB/vector store integrations.
-- `webapp/` — Next.js (App Router) React frontend for browsing cards and a first-pass deckbuilder UI.
-- `docker-compose.yml` — development compose that wires Postgres, Redis, backend, and frontend for local testing.
+- `backend/` — FastAPI backend (API, image caching, future DB/vector store integrations)
+- `query/` — FastAPI NL→IR→Scryfall query microservice (OpenAI + Redis caching)
+- `webapp/` — Next.js (App Router) React frontend (card browsing & deckbuilder UI)
+- `docker-compose.yml` — development compose wiring Postgres, Redis, backend, query, and frontend
 
 Quick overview
 
-- Frontend: Next.js 15 (TypeScript), React 18, Tailwind CSS, Mantine UI.
-- Backend: FastAPI, Pydantic, async database init (placeholder), simple image proxy and health endpoints.
+- Frontend: Next.js 15 (TypeScript), React 18, Tailwind CSS, Mantine UI
+- Backend: FastAPI, Pydantic, async database init (placeholder), image proxy & health endpoints
+- Query Service: FastAPI + OpenAI (Chat) parsing, Redis caching, deterministic compiler
 
 Running locally (recommended)
+
+1. Export required secret (OpenAI for query service):
+
+  ```bash
+  export OPENAI_API_KEY=sk-...yourkey...
+  ```
 
 1. Start everything with Docker Compose (hot reload for frontend + backend auto-reload):
 
@@ -29,7 +37,8 @@ Running locally (recommended)
 1. Services (default ports):
 
 - Frontend: <http://localhost:3000>
-- Backend (FastAPI): <http://localhost:8000> — OpenAPI/Swagger: `/docs`
+- Backend: <http://localhost:8000> (Swagger: `/docs`)
+- Query Service: <http://localhost:8080> (Swagger: `/docs`)
 
 Notes
 

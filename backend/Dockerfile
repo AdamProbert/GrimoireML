@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 # Multi-stage build for FastAPI backend
 
-ARG PYTHON_VERSION=3.12-slim
+ARG PYTHON_VERSION=3.12.1-slim
 FROM python:${PYTHON_VERSION} AS base
 
 # Environment settings
