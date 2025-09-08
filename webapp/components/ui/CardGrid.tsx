@@ -47,19 +47,20 @@ export const CardGrid: React.FC<CardGridProps> = ({
   return (
     <div className={`relative ${className}`}>
       {enableSettings && (
-        <div className="flex justify-end mb-2">
+        // Floating settings control: sticks to top-right of the scrollable grid area
+        <div className="sticky top-2 w-full z-20 flex justify-end pr-1">
           <Popover position="bottom-end" withArrow shadow="md">
             <Popover.Target>
               <Tooltip label="Grid settings" openDelay={300}>
                 <button
                   type="button"
                   aria-label="Grid settings"
-                  className="relative inline-flex items-center justify-center h-7 w-7 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-elevated)]/70 text-[color:var(--color-text-subtle)] hover:text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-bg-elevated)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-accent-primary)] focus:ring-offset-0 transition group shadow-sm hover:shadow-ember/40"
+                  className="relative inline-flex items-center justify-center h-8 w-8 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-bg-elevated)]/80 backdrop-blur-sm text-[color:var(--color-text-subtle)] hover:text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-bg-elevated)] focus:outline-none focus:ring-2 focus:ring-[color:var(--color-accent-primary)] focus:ring-offset-0 transition group shadow-sm hover:shadow-ember/40 hover:scale-[1.06]"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
-                    className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90"
+                    className="h-4 w-4 transition-transform duration-500 group-hover:rotate-90"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"

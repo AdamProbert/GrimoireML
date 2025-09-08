@@ -108,7 +108,7 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
       {activated && (
         <div
           ref={scrollRootRef}
-          className="relative border border-white/10 rounded-md bg-black/10 backdrop-blur-sm mx-auto animate-fade-in"
+          className="grim-grid-wrapper relative border border-white/15 rounded-md bg-black/50 backdrop-blur-sm mx-auto animate-fade-in"
           style={
             {
               maxWidth: '100%',
@@ -178,6 +178,16 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
           No results yet. Try a query.
         </Text>
       )}
+      {/* Local styles for scrollbar hiding */}
+      <style jsx>{`
+        .grim-grid-wrapper {
+          scrollbar-width: none;
+        }
+        .grim-grid-wrapper::-webkit-scrollbar {
+          width: 0;
+          height: 0;
+        }
+      `}</style>
     </div>
   );
 }
