@@ -155,6 +155,31 @@ export function useCardSearch(
     return () => observerRef.current?.disconnect();
   }, [hasMore, isFetchingNext, loading, loadNext]);
 
+  // Stable helpers so consuming components can safely include them in deps
+  const clearDerived = useCallback(() => {
+    setAllParts([]);
+    setActiveParts([]);
+    setParseWarnings([]);
+    setResults([]);
+    setHasMore(false);
+    setNextPage(null);
+    setEffectiveQuery('');
+  }, []);
+
+  const resetAll = useCallback(() => {
+    setPrompt('');
+    setError(null);
+    setLoading(false);
+    setParsing(false);
+    setAllParts([]);
+    setActiveParts([]);
+    setParseWarnings([]);
+    setResults([]);
+    setHasMore(false);
+    setNextPage(null);
+    setEffectiveQuery('');
+  }, []);
+
   return {
     // state
     prompt,
@@ -174,29 +199,7 @@ export function useCardSearch(
     runParseAndSearch,
     updateActiveParts,
     loadNext,
-    clearDerived: () => {
-      setAllParts([]);
-      setActiveParts([]);
-      setParseWarnings([]);
-      setResults([]);
-      setHasMore(false);
-      setNextPage(null);
-      setEffectiveQuery('');
-    },
-    // Full reset including prompt & transient flags. Consumer still responsible for any
-    // local UI state (e.g. displayCards) outside the hook.
-    resetAll: () => {
-      setPrompt('');
-      setError(null);
-      setLoading(false);
-      setParsing(false);
-      setAllParts([]);
-      setActiveParts([]);
-      setParseWarnings([]);
-      setResults([]);
-      setHasMore(false);
-      setNextPage(null);
-      setEffectiveQuery('');
-    },
+  clearDerived,
+  resetAll,
   } as const;
 }
