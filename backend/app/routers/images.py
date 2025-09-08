@@ -159,7 +159,6 @@ def _circuit_open(now: float, settings: Settings) -> bool:
 def _record_failure(now: float, settings: Settings):
     global _failure_times, _circuit_open_until
     _failure_times.append(now)
-    # Trim old
     window_start = now - settings.image_circuit_window_seconds
     while _failure_times and _failure_times[0] < window_start:
         _failure_times.pop(0)

@@ -1,0 +1,6 @@
+fastapi
+httpx
+redis[async]
+prometheus-client
+pydantic
+circuitbreaker==2.1.3
