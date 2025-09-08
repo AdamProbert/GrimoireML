@@ -72,9 +72,6 @@ export default function HomePage() {
             key={resetCounter}
             onFirstSearch={() => setHasSearched(true)}
           />
-          <Text size="xs" c="dimmed" className="mt-6 text-center">
-            Tip: Toggle parsed query parts below the input to refine results.
-          </Text>
         </div>
       </div>
     </Hero>

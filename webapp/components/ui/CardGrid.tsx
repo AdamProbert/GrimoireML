@@ -47,8 +47,8 @@ export const CardGrid: React.FC<CardGridProps> = ({
   return (
     <div className={`relative ${className}`}>
       {enableSettings && (
-        // Floating settings control: sticks to top-right of the scrollable grid area
-        <div className="sticky top-2 w-full z-20 flex justify-end pr-1">
+        // Absolutely positioned so it doesn't consume vertical space above first row
+        <div className="absolute top-2 right-2 z-20">
           <Popover position="bottom-end" withArrow shadow="md">
             <Popover.Target>
               <Tooltip label="Grid settings" openDelay={300}>

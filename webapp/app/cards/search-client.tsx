@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { Loader, Text } from '@mantine/core';
+import { Text } from '@mantine/core';
 import CardGrid from '../../components/ui/CardGrid';
 import ArcaneLoader from '../../components/ArcaneLoader';
 import { useCardSearch } from './hooks/useCardSearch';
@@ -19,6 +19,7 @@ interface CardSearchClientProps {
 }
 
 export default function CardSearchClient({ onFirstSearch }: CardSearchClientProps) {
+  // Scroll root is the grid area which should flex to fill remaining vertical space
   const scrollRootRef = useRef<HTMLDivElement | null>(null);
   const {
     prompt,
@@ -38,19 +39,51 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
     loadNext,
   } = useCardSearch(undefined, { scrollRoot: scrollRootRef });
 
-  // Track whether any search has been initiated (state so we re-render immediately)
-  const [activated, setActivated] = useState(false);
+  // Shadow copy of last committed search results (cleared immediately on edit)
+  const [displayCards, setDisplayCards] = useState<typeof results>([]);
+  const lastSearchPromptRef = useRef('');
+  const [dirty, setDirty] = useState(false);
+
+  // Whenever prompt diverges from last executed prompt -> immediate clean reset
+  useEffect(() => {
+    const isDirty = prompt !== lastSearchPromptRef.current;
+    if (isDirty && displayCards.length) {
+      setDisplayCards([]); // clear cards instantly
+      // Clear scroll
+      if (scrollRootRef.current) scrollRootRef.current.scrollTop = 0;
+    }
+    setDirty(isDirty);
+  }, [prompt, displayCards.length]);
+
+  // When new results arrive and input not dirty, sync them
+  useEffect(() => {
+    if (!dirty) {
+      setDisplayCards(results);
+    }
+  }, [results, dirty]);
+
+  // Track only if first search happened for callback side-effect
   const firstSearchPerformedRef = useRef(false);
-  const [firstLoaderActive, setFirstLoaderActive] = useState(false);
-  const MIN_FIRST_LOADER_MS = 3000; // minimum time arcane loader remains visible on first search
+  const [loaderActive, setLoaderActive] = useState(false);
+  const loaderStartRef = useRef<number>(0);
+  const loaderTimerRef = useRef<number | null>(null);
+  const MIN_LOADER_MS = 1000; // minimum time arcane loader remains visible each search (reduced from 3000)
+  const loadingRef = useRef(loading);
+  const parsingRef = useRef(parsing);
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
+  useEffect(() => {
+    parsingRef.current = parsing;
+  }, [parsing]);
 
   // Reset handler (listens for global reset event dispatched by NavBar/Logo)
   useEffect(() => {
     const handler = () => {
       firstSearchPerformedRef.current = false;
-      setActivated(false);
       setPrompt('');
-      // Optional: could also clear results via a hook method if exposed in future
+      setDisplayCards([]);
+      setDirty(false);
     };
     if (typeof window !== 'undefined') {
       window.addEventListener('grimoire:reset-search', handler);
@@ -64,29 +97,52 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!firstSearchPerformedRef.current) {
-      firstSearchPerformedRef.current = true; // persist flag
-      setActivated(true); // trigger UI transition (show grid)
-      onFirstSearch?.();
-      // Start guaranteed arcane loader window
-      setFirstLoaderActive(true);
-      setTimeout(() => {
-        setFirstLoaderActive(false);
-      }, MIN_FIRST_LOADER_MS);
+
+    if (!prompt.trim()) {
+      return;
     }
+    if (!firstSearchPerformedRef.current) {
+      firstSearchPerformedRef.current = true;
+      onFirstSearch?.();
+    }
+    // Start loader every search
+    setLoaderActive(true);
+    loaderStartRef.current = Date.now();
+    if (loaderTimerRef.current) window.clearTimeout(loaderTimerRef.current);
+    loaderTimerRef.current = window.setTimeout(() => {
+      // Only clear if backend work done
+      if (!loadingRef.current && !parsingRef.current) {
+        setLoaderActive(false);
+      }
+    }, MIN_LOADER_MS);
+    // Reset dirty state and record executed prompt BEFORE running search
+    lastSearchPromptRef.current = prompt;
+    setDirty(false);
     await runParseAndSearch();
   };
 
+  // When loading/parsing complete, if min loader time already elapsed, hide loader
+  useEffect(() => {
+    if (loaderActive && !loading && !parsing) {
+      const elapsed = Date.now() - loaderStartRef.current;
+      if (elapsed >= MIN_LOADER_MS) {
+        setLoaderActive(false);
+      }
+      // else let timeout clear it
+    }
+  }, [loading, parsing, loaderActive]);
+
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col flex-1 gap-4 min-h-0">
       <PromptForm
         value={prompt}
-        onChange={setPrompt}
+        onChange={(v) => {
+          setPrompt(v);
+        }}
         onSubmit={handleSubmit}
         disabled={parsing || loading}
       />
 
-      {(loading || parsing) && <Loader color="orange" />}
       {error && (
         <Text c="red" size="sm">
           {error}
@@ -98,94 +154,73 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
         </Text>
       )}
 
-      <QueryPartsChips
-        allParts={allParts}
-        activeParts={activeParts}
-        onChange={updateActiveParts}
-      />
-
-      {/* Grid area (appears after first submit even while loading) */}
-      {activated && (
-        <div
-          ref={scrollRootRef}
-          className="grim-grid-wrapper relative border border-white/15 rounded-md bg-black/50 backdrop-blur-sm mx-auto animate-fade-in"
-          style={
-            {
-              maxWidth: '100%',
-              width: '100%',
-              height: 'min(70vh, 1000px)',
-              overflowY: 'auto',
-              padding: '1rem',
-            } as React.CSSProperties
-          }
-        >
-          {/* First search arcane loader overlay */}
-          {firstSearchPerformedRef.current && firstLoaderActive && (
-            <ArcaneLoader label="Consulting the grimoire…" />
-          )}
-          {/* After loader completes, show results (when available) */}
-          {!firstLoaderActive && results.length > 0 && (
-            <CardGrid
-              className="animate-fade-in"
-              initialMinWidth={170}
-              cards={results.map((card) => ({
-                name: card.name,
-                imageUrl: card.image,
-                status: card.image ? 'ok' : 'pending',
-              }))}
-            />
-          )}
-          <div ref={sentinelRef} />
-        </div>
-      )}
-
-      {loading && <Loader color="orange" />}
-
-      {isFetchingNext && (
-        <div className="mt-2 animate-fade-in-slow">
-          <CardGrid
-            enableSettings={false}
-            cards={Array.from({ length: 6 }).map((_, i) => ({
-              name: `skeleton-${i}`,
-              status: 'pending' as const,
-              previewOnHover: false,
-            }))}
+      {/* Chips area (flex-shrink) */}
+      {!loaderActive && !dirty && (
+        <div className="flex-shrink-0">
+          <QueryPartsChips
+            allParts={allParts}
+            activeParts={activeParts}
+            onChange={updateActiveParts}
           />
         </div>
       )}
 
-      {hasMore && !isFetchingNext && (
-        <div className="flex justify-center">
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              void loadNext();
-            }}
-            aria-label="Load more results"
+      {(() => {
+        const showGrid =
+          loaderActive || loading || parsing || (!dirty && displayCards.length > 0);
+        if (!showGrid) return null;
+        return (
+          <div
+            ref={scrollRootRef}
+            className={[
+              'grim-grid-wrapper flex-1 min-h-0 relative border border-white/15 rounded-md',
+              'bg-black/50 backdrop-blur-sm mx-auto w-full overflow-y-auto p-3',
+            ].join(' ')}
           >
-            Load more
-          </button>
-        </div>
-      )}
+            {loaderActive && (
+              <ArcaneLoader label="Consulting the grimoire…" fullscreen={false} />
+            )}
+            {!loaderActive && !dirty && displayCards.length > 0 && (
+              <CardGrid
+                initialMinWidth={200}
+                cards={displayCards.map((card) => ({
+                  name: card.name,
+                  imageUrl: card.image,
+                  status: card.image ? 'ok' : 'pending',
+                }))}
+              />
+            )}
+            {hasMore && !isFetchingNext && (
+              <div className="flex justify-center py-4">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    void loadNext();
+                  }}
+                  aria-label="Load more results"
+                >
+                  Load more
+                </button>
+              </div>
+            )}
+            <div ref={sentinelRef} />
+          </div>
+        );
+      })()}
 
-      {!loading && !hasMore && results.length > 0 && (
-        <Text size="sm" c="dimmed">
-          End of results.
-        </Text>
-      )}
-      {!loading && activated && results.length === 0 && (
-        <Text size="sm" c="dimmed">
-          No results yet. Try a query.
-        </Text>
-      )}
-      {/* Local styles for scrollbar hiding */}
+      {/* Local scrollbar styling */}
       <style jsx>{`
         .grim-grid-wrapper {
-          scrollbar-width: none;
+          scrollbar-width: thin;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
         }
         .grim-grid-wrapper::-webkit-scrollbar {
-          width: 0;
-          height: 0;
+          width: 6px;
+        }
+        .grim-grid-wrapper::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
         }
       `}</style>
     </div>

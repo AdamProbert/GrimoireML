@@ -12,13 +12,14 @@ import type { LiteCard } from '../types';
  *  The UI layer can stay lean: form, chips, grid, sentinel.
  */
 export function useCardSearch(
-  initialPrompt = 'low cost goblins',
+  // Start with an empty prompt by default (previously 'low cost goblins')
+  initialPrompt = '',
   options?: { scrollRoot?: RefObject<HTMLElement | null> }
 ) {
   // Natural language prompt entered by user
   const [prompt, setPrompt] = useState(initialPrompt);
   // Effective Scryfall query string derived from active parts (not currently displayed but preserved)
-  const [effectiveQuery, setEffectiveQuery] = useState<string>('lightning bolt');
+  const [effectiveQuery, setEffectiveQuery] = useState<string>('');
 
   // Loading + error state
   const [loading, setLoading] = useState(false); // Scryfall search
