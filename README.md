@@ -5,12 +5,13 @@
 Grimoire ML is an AI-assisted Magic: The Gathering card discovery and deckbuilding web application.
 
 ---
-This mono-repo contains three runnable services plus local orchestration:
+This mono-repo contains three core services, a monitoring stack, plus local orchestration:
 
 - `backend/` — FastAPI backend (API, image caching, future DB/vector store integrations)
 - `query/` — FastAPI NL→IR→Scryfall query microservice (OpenAI + Redis caching)
 - `webapp/` — Next.js (App Router) React frontend (card browsing & deckbuilder UI)
-- `docker-compose.yml` — development compose wiring Postgres, Redis, backend, query, and frontend
+- `monitoring/` — Prometheus metrics and Grafana dashboards configuration
+- `docker-compose.yml` — development compose wiring Postgres, Redis, backend, query, frontend, Prometheus, and Grafana
 
 Quick overview
 
@@ -39,6 +40,8 @@ Running locally (recommended)
 - Frontend: <http://localhost:3000>
 - Backend: <http://localhost:8000> (Swagger: `/docs`)
 - Query Service: <http://localhost:8080> (Swagger: `/docs`)
+- Prometheus: <http://localhost:9090>
+- Grafana: <http://localhost:3001>
 
 Notes
 
