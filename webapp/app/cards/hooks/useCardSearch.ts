@@ -174,5 +174,29 @@ export function useCardSearch(
     runParseAndSearch,
     updateActiveParts,
     loadNext,
+    clearDerived: () => {
+      setAllParts([]);
+      setActiveParts([]);
+      setParseWarnings([]);
+      setResults([]);
+      setHasMore(false);
+      setNextPage(null);
+      setEffectiveQuery('');
+    },
+    // Full reset including prompt & transient flags. Consumer still responsible for any
+    // local UI state (e.g. displayCards) outside the hook.
+    resetAll: () => {
+      setPrompt('');
+      setError(null);
+      setLoading(false);
+      setParsing(false);
+      setAllParts([]);
+      setActiveParts([]);
+      setParseWarnings([]);
+      setResults([]);
+      setHasMore(false);
+      setNextPage(null);
+      setEffectiveQuery('');
+    },
   } as const;
 }

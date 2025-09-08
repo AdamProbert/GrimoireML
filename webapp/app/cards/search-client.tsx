@@ -37,6 +37,8 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
     runParseAndSearch,
     updateActiveParts,
     loadNext,
+    clearDerived,
+    resetAll,
   } = useCardSearch(undefined, { scrollRoot: scrollRootRef });
 
   // Shadow copy of last committed search results (cleared immediately on edit)
@@ -47,13 +49,13 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
   // Whenever prompt diverges from last executed prompt -> immediate clean reset
   useEffect(() => {
     const isDirty = prompt !== lastSearchPromptRef.current;
-    if (isDirty && displayCards.length) {
-      setDisplayCards([]); // clear cards instantly
-      // Clear scroll
+    if (isDirty) {
+      if (displayCards.length) setDisplayCards([]);
+      clearDerived(); // purge parts + warnings + results
       if (scrollRootRef.current) scrollRootRef.current.scrollTop = 0;
     }
     setDirty(isDirty);
-  }, [prompt, displayCards.length]);
+  }, [prompt, displayCards.length, clearDerived]);
 
   // When new results arrive and input not dirty, sync them
   useEffect(() => {
@@ -81,8 +83,9 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
   useEffect(() => {
     const handler = () => {
       firstSearchPerformedRef.current = false;
-      setPrompt('');
       setDisplayCards([]);
+      resetAll();
+      lastSearchPromptRef.current = '';
       setDirty(false);
     };
     if (typeof window !== 'undefined') {
@@ -93,7 +96,7 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
         window.removeEventListener('grimoire:reset-search', handler);
       }
     };
-  }, [setPrompt]);
+  }, [resetAll]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -140,7 +143,7 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
           setPrompt(v);
         }}
         onSubmit={handleSubmit}
-        disabled={parsing || loading}
+        disabled={parsing || loading || loaderActive}
       />
 
       {error && (
@@ -177,9 +180,7 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
               'bg-black/50 backdrop-blur-sm mx-auto w-full overflow-y-auto p-3',
             ].join(' ')}
           >
-            {loaderActive && (
-              <ArcaneLoader label="Consulting the grimoire…" fullscreen={false} />
-            )}
+            {loaderActive && <ArcaneLoader fullscreen={false} />}
             {!loaderActive && !dirty && displayCards.length > 0 && (
               <CardGrid
                 initialMinWidth={200}
