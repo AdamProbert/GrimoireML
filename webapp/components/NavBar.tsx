@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Logo from './Logo';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const links = [
@@ -11,6 +11,7 @@ const links = [
 
 export default function NavBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   return (
     <header className="bg-[color:var(--color-bg-base)]/90 backdrop-blur border-b border-[color:var(--color-border)] shadow-[0_2px_0_0_rgba(255,111,0,0.05)] relative">
@@ -21,13 +22,22 @@ export default function NavBar() {
             aria-label="GrimoireML Home"
             className="group shrink-0 flex items-center focus:outline-none"
             tabIndex={0}
+            onClick={(e) => {
+              e.preventDefault();
+              router.push('/');
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('grimoire:reset-search'));
+              }
+            }}
           >
             <Logo
               size={64}
               priority
-              className="transition-transform group-hover:scale-[1.05]"
+              className="transition-transform group-hover:scale-[1.05] cursor-pointer"
             />
-            <span className="sr-only">GrimoireML</span>
+            <span className="ml-3 text-xl md:text-2xl font-semibold tracking-tight bg-gradient-to-r from-amber-300 via-orange-200 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_4px_rgba(255,180,90,0.25)] select-none group-hover:brightness-110 transition">
+              GrimoireML
+            </span>
           </Link>
           <nav className="hidden md:flex items-center gap-3">
             {links.map((l) => {

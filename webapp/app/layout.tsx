@@ -3,7 +3,7 @@ import '@mantine/core/styles.css';
 import './globals.css';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import React from 'react';
-import NavBar from '../components/NavBar';
+import InteractiveHeader from '../components/InteractiveHeader';
 import { Exo_2, Inter } from 'next/font/google';
 
 const headingFont = Exo_2({
@@ -48,8 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${headingFont.variable} ${bodyFont.variable}`}>
         <MantineProvider defaultColorScheme="dark">
           <div className="flex flex-col min-h-screen" id="__app-shell">
-            <NavBar />
-            <main className="flex-1 px-6 py-6">{children}</main>
+            <InteractiveHeader />
+            <main className="flex-1 px-4 md:px-8 py-4 md:py-8">{children}</main>
             <div id="modal-root" />
           </div>
         </MantineProvider>

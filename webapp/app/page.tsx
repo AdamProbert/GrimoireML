@@ -1,61 +1,82 @@
-import Link from 'next/link';
+'use client';
 import { Text } from '@mantine/core';
-import Heading from '../components/Heading';
+import CardSearchClient from './cards/search-client';
+import Hero from '../components/Hero';
 import Image from 'next/image';
 import titleImage from '../assets/grimoire-title-1kx1k.png';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function HomePage() {
+  const [hasSearched, setHasSearched] = useState(false);
+  const [resetCounter, setResetCounter] = useState(0); // forces remount of search client
+
+  const doReset = useCallback(() => {
+    setHasSearched(false);
+    setResetCounter((c) => c + 1);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('grimoire:reset-search'));
+    }
+  }, []);
+
+  // Listen for external reset events (e.g., NavBar logo click)
+  useEffect(() => {
+    const handler = () => doReset();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('grimoire:reset-search', handler);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('grimoire:reset-search', handler);
+      }
+    };
+  }, [doReset]);
   return (
-    <div className="space-y-8">
-      <section className="text-center space-y-4">
-        <div className="flex justify-center -mt-2">
+    <Hero hideDefaultHeader>
+      <div
+        className={`flex flex-col items-center w-full transition-all duration-500 ease-out ${
+          hasSearched ? 'pt-4 gap-4' : 'justify-center flex-grow py-12'
+        }`}
+        style={{ minHeight: '70vh' }}
+      >
+        <div
+          className={`flex justify-center w-full transition-all duration-500 ease-out ${
+            hasSearched ? 'mb-2' : 'mb-8'
+          }`}
+        >
           <Image
             src={titleImage}
-            alt="GrimoireML title"
+            alt="GrimoireML Title"
             priority
-            className="w-full max-w-[624px] h-auto drop-shadow-[0_0_14px_rgba(255,200,120,0.32)]"
+            onClick={doReset}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                doReset();
+              }
+            }}
+            className={`h-auto drop-shadow-[0_0_16px_rgba(255,190,120,0.35)] transition-all duration-500 ease-out w-full ${
+              hasSearched
+                ? 'max-w-[300px] cursor-pointer'
+                : 'max-w-[640px] cursor-pointer'
+            } outline-none focus:ring-2 focus:ring-amber-400/60 rounded-md`}
           />
         </div>
-        <Text size="lg" c="dimmed">
-          Explore Magic: The Gathering cards with semantic search & AI-assisted
-          deckbuilding.
-        </Text>
-        <div className="flex justify-center gap-4 mt-6">
-          <Link href="/cards" className="btn btn-primary btn-lg">
-            Browse Cards
-          </Link>
-          <Link href="/my-decks" className="btn btn-primary btn-lg">
-            My Decks
-          </Link>
+        <div
+          className={`w-full mx-auto transition-all duration-500 ease-out ${
+            hasSearched ? 'max-w-[1600px]' : 'max-w-3xl'
+          }`}
+        >
+          <CardSearchClient
+            key={resetCounter}
+            onFirstSearch={() => setHasSearched(true)}
+          />
+          <Text size="xs" c="dimmed" className="mt-6 text-center">
+            Tip: Toggle parsed query parts below the input to refine results.
+          </Text>
         </div>
-      </section>
-      <section className="grid gap-6 md:grid-cols-3">
-        <div className="rounded-lg border border-white/10 p-4 backdrop-blur bg-white/5">
-          <Heading level={3} className="mb-2">
-            Fast Card Search
-          </Heading>
-          <p className="text-sm text-white/70">
-            Start with a simple name query; evolve to semantic intent like “whimsical fae
-            that draw cards”.
-          </p>
-        </div>
-        <div className="rounded-lg border border-white/10 p-4 backdrop-blur bg-white/5">
-          <Heading level={3} className="mb-2">
-            Deck Insights
-          </Heading>
-          <p className="text-sm text-white/70">
-            Planned features: curve analysis, synergy detection, upgrade suggestions.
-          </p>
-        </div>
-        <div className="rounded-lg border border-white/10 p-4 backdrop-blur bg-white/5">
-          <Heading level={3} className="mb-2">
-            AI Roadmap
-          </Heading>
-          <p className="text-sm text-white/70">
-            Future vector search & recommendations—foundation-ready architecture today.
-          </p>
-        </div>
-      </section>
-    </div>
+      </div>
+    </Hero>
   );
 }

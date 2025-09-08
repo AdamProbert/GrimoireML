@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, RefObject } from 'react';
 import type { LiteCard } from '../types';
 
 /**
@@ -11,7 +11,10 @@ import type { LiteCard } from '../types';
  *
  *  The UI layer can stay lean: form, chips, grid, sentinel.
  */
-export function useCardSearch(initialPrompt = 'low cost goblins') {
+export function useCardSearch(
+  initialPrompt = 'low cost goblins',
+  options?: { scrollRoot?: RefObject<HTMLElement | null> }
+) {
   // Natural language prompt entered by user
   const [prompt, setPrompt] = useState(initialPrompt);
   // Effective Scryfall query string derived from active parts (not currently displayed but preserved)
@@ -132,13 +135,21 @@ export function useCardSearch(initialPrompt = 'low cost goblins') {
   useEffect(() => {
     if (!sentinelRef.current) return;
     if (observerRef.current) observerRef.current.disconnect();
-    observerRef.current = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting && hasMore && !isFetchingNext && !loading) {
-          void loadNext();
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && hasMore && !isFetchingNext && !loading) {
+            void loadNext();
+          }
         }
-      }
-    });
+      },
+      options?.scrollRoot?.current
+        ? {
+            root: options.scrollRoot.current,
+            rootMargin: '0px 0px 600px 0px',
+          }
+        : undefined
+    );
     observerRef.current.observe(sentinelRef.current);
     return () => observerRef.current?.disconnect();
   }, [hasMore, isFetchingNext, loading, loadNext]);
