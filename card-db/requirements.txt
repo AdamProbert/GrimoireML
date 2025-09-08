@@ -1,6 +1,7 @@
-fastapi
-httpx
-redis[async]
-prometheus-client
-pydantic
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+pydantic>=2.8.0
+redis==5.0.7
+openai==1.106.1
+prometheus-client==0.20.0
 circuitbreaker==2.1.3

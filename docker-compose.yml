@@ -1,5 +1,11 @@
 version: "3.9"
 
+# Shared healthcheck defaults (interval, timeout, retries)
+x-healthcheck-params: &healthcheckParams
+  interval: ${HEALTHCHECK_INTERVAL:-5s}
+  timeout: ${HEALTHCHECK_TIMEOUT:-3s}
+  retries: ${HEALTHCHECK_RETRIES:-5}
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -11,9 +17,7 @@ services:
       - "5432:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+      <<: *healthcheckParams
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -34,9 +38,7 @@ services:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/grimoire
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+      <<: *healthcheckParams
     depends_on:
       redis:
         condition: service_healthy
@@ -61,9 +63,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+      <<: *healthcheckParams
 
   frontend:
     build:
@@ -75,6 +75,10 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+      card-db:
+        condition: service_healthy
+      query:
+        condition: service_healthy
     ports:
       - "3000:3000"
     # Hot reload development setup: bind mount source; keep node_modules inside container layer
@@ -83,9 +87,11 @@ services:
       - /app/node_modules
     environment:
       NEXT_PUBLIC_API_BASE: http://backend:8000
+      NEXT_PUBLIC_CARD_DB_BASE: http://card-db:8081
     command: npm run dev
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      <<: *healthcheckParams
 
   prometheus:
     image: prom/prometheus:v2.54.1
@@ -138,9 +144,24 @@ services:
       - redis-data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+      <<: *healthcheckParams
+
+  card-db:
+    build:
+      context: ./card-db
+      dockerfile: Dockerfile
+    image: grimoire-card-db:latest
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      IMAGE_CACHE_TTL: 2592000 # 30 days
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      <<: *healthcheckParams
 
 volumes:
   redis-data:

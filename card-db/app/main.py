@@ -53,7 +53,7 @@ REQUEST_COUNT = Counter(
     "Total HTTP requests",
     ["method", "path", "status"],
     namespace="grimoire",
-    subsystem="card-db",
+    subsystem=settings.app_name,
 )
 REQUEST_LATENCY = Histogram(
     "request_latency_seconds",
@@ -61,7 +61,7 @@ REQUEST_LATENCY = Histogram(
     ["method", "path"],
     buckets=(0.05, 0.1, 0.25, 0.5, 1, 2, 5),
     namespace="grimoire",
-    subsystem="card-db",
+    subsystem=settings.app_name,
 )
 
 

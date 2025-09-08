@@ -8,8 +8,8 @@ export async function GET(req: NextRequest, context: any) {
   if (!id || typeof id !== 'string') {
     return new Response('Missing id', { status: 400 });
   }
-  const backendBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
-  const url = `${backendBase}/images/${id}`;
+  const cardDbBase = process.env.NEXT_PUBLIC_CARD_DB_BASE || 'http://localhost:8081';
+  const url = `${cardDbBase}/images/${id}`;
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) {
     return new Response('Error fetching image', { status: res.status });

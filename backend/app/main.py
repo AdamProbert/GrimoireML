@@ -2,7 +2,6 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from .core.config import get_settings
 from .routers import health
-from .routers import images
 from .routers import decks
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 import time
@@ -31,7 +30,6 @@ app = FastAPI(
 )
 
 app.include_router(health.router)
-app.include_router(images.router)
 app.include_router(decks.router)
 
 # Basic metrics
@@ -40,7 +38,7 @@ REQUEST_COUNT = Counter(
     "Total HTTP requests",
     ["method", "path", "status"],
     namespace="grimoire",
-    subsystem="backend",
+    subsystem=settings.app_name,
 )
 REQUEST_LATENCY = Histogram(
     "request_latency_seconds",
@@ -48,7 +46,7 @@ REQUEST_LATENCY = Histogram(
     ["method", "path"],
     buckets=(0.05, 0.1, 0.25, 0.5, 1, 2, 5),
     namespace="grimoire",
-    subsystem="backend",
+    subsystem=settings.app_name,
 )
 
 

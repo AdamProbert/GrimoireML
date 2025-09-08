@@ -4,7 +4,7 @@ import os
 
 
 class Settings(BaseModel):
-    app_name: str = os.getenv("APP_NAME", "card-db")
+    app_name: str = os.getenv("APP_NAME", "card_db")
     version: str = os.getenv("VERSION", "0.1.0")
     environment: str = os.getenv("ENVIRONMENT", "local")
     debug: bool = os.getenv("DEBUG", "false").lower() == "true"

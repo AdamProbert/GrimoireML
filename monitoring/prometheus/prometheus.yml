@@ -19,6 +19,14 @@ scrape_configs:
       - source_labels: [__address__]
         target_label: instance
         replacement: query
+  - job_name: 'card_db'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['card-db:8081']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: card_db
   - job_name: 'prometheus'
     static_configs:
       - targets: ['prometheus:9090']
