@@ -1,15 +1,14 @@
-"""Redis cache helpers."""
+"""Redis cache helpers (moved under services)."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
-
 import redis.asyncio as redis
 
-from .config import settings
-from .models import QueryIR
+from app.core.config import settings
+from app.models import QueryIR
 
 logger = logging.getLogger(__name__)
 
@@ -65,3 +64,12 @@ async def cache_compiled_query(ir: QueryIR, query: str):
     raw = ir.model_dump_json()
     ck = ir_key(raw)
     await r.set(ck, query, ex=settings.cache_ttl_secs)
+
+
+__all__ = [
+    "init_redis",
+    "get_ir_for_text",
+    "cache_ir",
+    "get_compiled_query",
+    "cache_compiled_query",
+]

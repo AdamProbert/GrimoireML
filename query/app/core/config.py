@@ -1,8 +1,4 @@
-"""Configuration for grimoireml-query service.
-
-Mirrors the backend config approach: pull values from environment at import time
-with sane defaults, then validate required ones (OPENAI_API_KEY).
-"""
+"""Configuration for grimoireml-query service (refactored into core package)."""
 
 from __future__ import annotations
 
@@ -30,3 +26,5 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
+__all__ = ["Settings", "settings", "get_settings"]

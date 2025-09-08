@@ -1,4 +1,4 @@
-"""Error handling utilities."""
+"""Error handling utilities (moved to core)."""
 
 from __future__ import annotations
 
@@ -20,3 +20,9 @@ async def validation_exception_handler(request: Request, exc: ValidationError): 
 async def runtime_exception_handler(request: Request, exc: Exception):  # type: ignore[override]
     logger.error("Unhandled error", exc_info=exc)
     return JSONResponse(status_code=500, content={"error": "internal_error"})
+
+
+__all__ = [
+    "validation_exception_handler",
+    "runtime_exception_handler",
+]

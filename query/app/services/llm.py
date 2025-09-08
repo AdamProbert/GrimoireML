@@ -1,18 +1,15 @@
-"""LLM assisted natural language -> QueryIR parsing with fallback rule-based parser."""
+"""LLM assisted natural language -> QueryIR parsing (moved under services)."""
 
 from __future__ import annotations
 
 import json
 import logging
-
 from openai import OpenAI, OpenAIError
 from pydantic import ValidationError
-
-from .config import settings
-from .models import QueryIR
+from app.core.config import settings
+from app.models import QueryIR
 from prometheus_client import Counter, Histogram
 
-# Metrics
 LLM_PARSE_ATTEMPTS = Counter(
     "llm_parse_attempts_total",
     "Total LLM parse attempts",
@@ -36,7 +33,6 @@ LLM_FINAL_OUTCOME = Counter(
 )
 
 logger = logging.getLogger(__name__)
-
 
 _FEW_SHOT = [
     {
@@ -93,7 +89,6 @@ def _build_prompt(user_text: str) -> str:
 
 
 def llm_parse(text: str) -> QueryIR | None:
-    """Attempt to parse using the LLM up to 3 times; return None on persistent failure/refusal."""
     prompt = _build_prompt(text)
     client: OpenAI | None = None
     for attempt in range(1, 4):
@@ -128,7 +123,6 @@ def llm_parse(text: str) -> QueryIR | None:
 
 
 def parse_nl_query(text: str) -> tuple[QueryIR, list[str]]:
-    """Parse natural language to QueryIR by attempting LLM parse up to 3 times, then fallback."""
     warnings: list[str] = []
     ir: QueryIR | None = None
     for attempt in range(3):
@@ -141,3 +135,6 @@ def parse_nl_query(text: str) -> tuple[QueryIR, list[str]]:
         warnings.append("LLM parsing failed after 3 attempts; returning None")
         LLM_FINAL_OUTCOME.labels("failed").inc()
     return ir, warnings
+
+
+__all__ = ["parse_nl_query"]

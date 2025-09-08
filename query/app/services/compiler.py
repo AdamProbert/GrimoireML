@@ -1,16 +1,10 @@
-"""Compiler from QueryIR -> Scryfall query string.
-
-Adds lightweight validation & heuristic warnings so callers get feedback
-about potentially unintended broad or malformed queries without bloating
-the parser layer. All validation here is non-fatal; the compiler will
-emit a best-effort query string regardless (unless IR is entirely empty).
-"""
+"""Compiler from QueryIR -> Scryfall query string (moved under services)."""
 
 from __future__ import annotations
 
 from typing import List
 import re
-from .models import QueryIR
+from app.models import QueryIR
 from prometheus_client import Counter, Histogram
 
 # Metrics
@@ -65,16 +59,8 @@ def _categorize_warning(w: str) -> str:
 
 
 def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
-    """Compile IR into a Scryfall syntax query string and collect warnings.
-
-    Warning categories:
-    - empty / broad queries
-    - invalid or unknown field values (rarity, set code, colors)
-    - structural hints (empty entity constraints)
-    """
     parts: List[str] = []
     warnings: List[str] = []
-
     import time
 
     start = time.perf_counter()
@@ -135,7 +121,6 @@ def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
     if ir.release_date:
         rd = ir.release_date
         if rd.op in (">=", ">"):
-            # Shortcut using year if operator is >= or > and date is start of year.
             year = rd.date.split("-")[0]
             if rd.date.endswith("-01-01"):
                 parts.append(f"year{rd.op}{year}")
@@ -186,7 +171,6 @@ def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
     if not parts:
         warnings.append("empty query produced from IR (no usable constraints)")
     else:
-        # Heuristic: if only sort directives present it's too broad.
         non_sort_parts = [
             p for p in parts if not p.startswith("sort:") and not p.startswith("order:")
         ]
@@ -200,10 +184,12 @@ def compile_to_scryfall(ir: QueryIR) -> tuple[str, list[str]]:
             )
 
     query = " ".join(parts).strip()
-    # Metrics collection
     outcome = "empty" if not query else "success"
     COMPILE_COUNT.labels(outcome).inc()
     for w in warnings:
         COMPILE_WARNINGS.labels(_categorize_warning(w)).inc()
     COMPILE_LATENCY.observe(time.perf_counter() - start)
     return query, warnings
+
+
+__all__ = ["compile_to_scryfall"]
