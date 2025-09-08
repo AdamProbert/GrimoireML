@@ -49,6 +49,34 @@ class QueryIR(BaseModel):
     release_date: ReleaseDate | None = None
     set_codes: List[str] = []
     rarities: List[str] = []
+    # name and oracle text variants
+    name_exact: List[str] = []
+    name_not: List[str] = []
+    oracle_text_exact: List[str] = []
+    oracle_text_not: List[str] = []
+    # flavor text filters
+    flavor_text_contains: List[str] = []
+    flavor_text_exact: List[str] = []
+    flavor_text_not: List[str] = []
+    # numeric comparisons
+    power: CompareNumber | None = None
+    toughness: CompareNumber | None = None
+    loyalty: CompareNumber | None = None
+    card_number: CompareNumber | None = None
+    price_usd: CompareNumber | None = None
+    price_eur: CompareNumber | None = None
+    price_tix: CompareNumber | None = None
+    # categorical filters
+    layout: List[str] = []  # scryfall layouts
+    languages: List[str] = []
+    artist: List[str] = []
+    watermark: List[str] = []
+    border: List[str] = []
+    frame: List[str] = []
+    reprint_groups: List[str] = []
+    related: List[str] = []
+    art_tags: List[str] = []  # art:, atag:, arttag:
+    oracle_tags: List[str] = []  # function:, otag:, oracletag:
     formats: List[Formats] = []
     sort: SortSpec = Field(default_factory=SortSpec)
 

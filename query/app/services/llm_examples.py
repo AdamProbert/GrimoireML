@@ -1,0 +1,102 @@
+"""Few-shot examples for LLM parse."""
+
+FEW_SHOT = [
+    {
+        "input": "mono white angels mv<=5 legal commander",
+        "ir": {
+            "entity": {
+                "card_types": ["creature"],
+                "subtypes": ["angel"],
+                "supertypes": [],
+                "name_contains": [],
+                "oracle_text_contains": [],
+            },
+            "mana_value": {"op": "<=", "value": 5},
+            "colors": {"mode": "identity_only", "set": ["W"], "strict": False},
+            "release_date": None,
+            "set_codes": [],
+            "rarities": [],
+            "formats": [{"name": "commander", "legal": True}],
+            "sort": {"by": "edhrec", "direction": "desc"},
+        },
+    },
+    {
+        "input": "blue instant card draw cmc 3 or less after 2021",
+        "ir": {
+            "entity": {
+                "card_types": ["instant"],
+                "subtypes": [],
+                "supertypes": [],
+                "name_contains": [],
+                "oracle_text_contains": ["draw"],
+            },
+            "mana_value": {"op": "<=", "value": 3},
+            "colors": {"mode": "identity_only", "set": ["U"], "strict": False},
+            "release_date": {"op": ">=", "date": "2022-01-01"},
+            "set_codes": [],
+            "rarities": [],
+            "formats": [],
+            "sort": {"by": "edhrec", "direction": "desc"},
+        },
+    },
+    {
+        "input": "green enchantment with forest artwork",
+        "ir": {
+            "entity": {
+                "card_types": ["enchantment"],
+                "subtypes": [],
+                "supertypes": [],
+                "name_contains": [],
+                "oracle_text_contains": [],
+            },
+            "mana_value": None,
+            "colors": {"mode": "identity_only", "set": [], "strict": False},
+            "release_date": None,
+            "set_codes": [],
+            "rarities": [],
+            "formats": [],
+            "sort": {"by": "edhrec", "direction": "desc"},
+            "art_tags": ["forest"],
+        },
+    },
+    {
+        "input": "cards with flying function tag",
+        "ir": {
+            "entity": {
+                "card_types": [],
+                "subtypes": [],
+                "supertypes": [],
+                "name_contains": [],
+                "oracle_text_contains": [],
+            },
+            "mana_value": None,
+            "colors": {"mode": "identity_only", "set": [], "strict": False},
+            "release_date": None,
+            "set_codes": [],
+            "rarities": [],
+            "formats": [],
+            "sort": {"by": "edhrec", "direction": "desc"},
+            "oracle_tags": ["flying"],
+        },
+    },
+    {
+        "input": "show me creatures with blue eyes",
+        "ir": {
+            "entity": {
+                "card_types": ["creature"],
+                "subtypes": [],
+                "supertypes": [],
+                "name_contains": [],
+                "oracle_text_contains": [],
+            },
+            "mana_value": None,
+            "colors": {"mode": "identity_only", "set": [], "strict": False},
+            "release_date": None,
+            "set_codes": [],
+            "rarities": [],
+            "formats": [],
+            "sort": {"by": "edhrec", "direction": "desc"},
+            "art_tags": ["blue-eye"],
+        },
+    },
+]

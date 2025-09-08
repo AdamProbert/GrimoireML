@@ -77,14 +77,14 @@ async def parse_endpoint(req: ParseRequest):
             )
         else:
             CACHE_COMPILE_LOOKUPS.labels("miss").inc()
-            compiled, comp_warnings = compile_to_scryfall(ir)
+            compiled, compiled_parts, comp_warnings = compile_to_scryfall(ir)
             for _ in comp_warnings:
                 WARNINGS_COUNT.labels("compile").inc()
             warnings.extend(comp_warnings)
             await cache.cache_compiled_query(ir, compiled)
         PARSE_REQUESTS.labels(cache_state, status).inc()
         return ParseResponse(
-            ir=ir, query=compiled, query_parts=compiled.split(" "), warnings=warnings
+            ir=ir, query=compiled, query_parts=compiled_parts, warnings=warnings
         )
     except Exception:  # noqa
         status = "error"
