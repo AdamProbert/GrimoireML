@@ -19,6 +19,27 @@ Quick overview
 - Backend: FastAPI, Pydantic, async database init (placeholder), image proxy & health endpoints
 - Query Service: FastAPI + OpenAI (Chat) parsing, Redis caching, deterministic compiler
 
+Using just (optional)
+
+If you are on macOS, you can install just via Homebrew and use it to bootstrap your Python environments and dependencies:
+
+```bash
+brew install just
+```
+
+Then, from the repository root, run:
+
+```bash
+just setup
+```
+
+This will:
+
+- Create a Python virtual environment in `.venv` if it doesn't already exist
+- Activate the virtual environment
+- Upgrade `pip`
+- Install all Python dependencies from each `requirements.txt` file in the repo
+
 Running locally (recommended)
 
 1. Export required secret (OpenAI for query service):
