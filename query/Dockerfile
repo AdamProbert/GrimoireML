@@ -22,6 +22,9 @@ RUN pip install --upgrade pip \
 # Copy application source
 COPY app ./app
 
+# Copy data files
+COPY data ./data
+
 # Create non-root user
 RUN useradd -u 1002 -m appuser \ 
     && chown -R appuser:appuser ${APP_HOME}

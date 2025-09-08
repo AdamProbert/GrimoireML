@@ -33,13 +33,6 @@ CACHE_IR_LOOKUPS = Counter(
     namespace="grimoire",
     subsystem="query",
 )
-CACHE_COMPILE_LOOKUPS = Counter(
-    "cache_compile_lookups_total",
-    "Compiled query cache lookups",
-    ["result"],
-    namespace="grimoire",
-    subsystem="query",
-)
 WARNINGS_COUNT = Counter(
     "parse_warnings_total",
     "Warnings produced in parse pipeline",
@@ -61,6 +54,7 @@ async def parse_endpoint(req: ParseRequest):
         ir = await cache.get_ir_for_text(req.text)
         if ir is not None:
             CACHE_IR_LOOKUPS.labels("hit").inc()
+            cache_state = "ir_hit"
         else:
             CACHE_IR_LOOKUPS.labels("miss").inc()
             ir, warnings_llm = parse_nl_query(req.text)
@@ -69,19 +63,10 @@ async def parse_endpoint(req: ParseRequest):
             warnings.extend(warnings_llm)
             await cache.cache_ir(req.text, ir)
 
-        compiled = await cache.get_compiled_query(ir)
-        if compiled is not None:
-            CACHE_COMPILE_LOOKUPS.labels("hit").inc()
-            cache_state = (
-                "ir_hit" if CACHE_IR_LOOKUPS._metrics.get(("hit",)) else "comp_hit"
-            )
-        else:
-            CACHE_COMPILE_LOOKUPS.labels("miss").inc()
-            compiled, compiled_parts, comp_warnings = compile_to_scryfall(ir)
-            for _ in comp_warnings:
-                WARNINGS_COUNT.labels("compile").inc()
-            warnings.extend(comp_warnings)
-            await cache.cache_compiled_query(ir, compiled)
+        compiled, compiled_parts, comp_warnings = compile_to_scryfall(ir)
+        for _ in comp_warnings:
+            WARNINGS_COUNT.labels("compile").inc()
+        warnings.extend(comp_warnings)
         PARSE_REQUESTS.labels(cache_state, status).inc()
         return ParseResponse(
             ir=ir, query=compiled, query_parts=compiled_parts, warnings=warnings

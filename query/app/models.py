@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from typing import Literal, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from .services.tag_index import load_index
 
 Color = Literal["W", "U", "B", "R", "G"]
 
@@ -79,6 +80,34 @@ class QueryIR(BaseModel):
     oracle_tags: List[str] = []  # function:, otag:, oracletag:
     formats: List[Formats] = []
     sort: SortSpec = Field(default_factory=SortSpec)
+
+    # Normalization before validation: coerce to list[str] lowercase
+    @field_validator("art_tags", "oracle_tags", mode="before")
+    @classmethod
+    def _coerce_list(cls, v):  # type: ignore
+        if v is None:
+            return []
+        if isinstance(v, str):
+            v = [v]
+        if isinstance(v, list):
+            return [
+                str(x).strip().lower()
+                for x in v
+                if isinstance(x, (str, int)) and str(x).strip()
+            ]
+        return []
+
+    @field_validator("art_tags")
+    @classmethod
+    def _filter_art(cls, v: list[str]):  # type: ignore
+        idx = load_index()
+        return [t for t in v if t in idx.art_tags]
+
+    @field_validator("oracle_tags")
+    @classmethod
+    def _filter_oracle(cls, v: list[str]):  # type: ignore
+        idx = load_index()
+        return [t for t in v if t in idx.oracle_tags]
 
 
 class ParseRequest(BaseModel):

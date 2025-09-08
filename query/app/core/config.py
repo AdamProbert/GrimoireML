@@ -15,6 +15,14 @@ class Settings(BaseModel):
     allowed_origins: str = os.getenv("ALLOWED_ORIGINS", "*")
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    # Tag candidate / fuzzy matching feature flags & tuning
+    enable_tag_candidates: bool = os.getenv("ENABLE_TAG_CANDIDATES", True)
+    tags_max_art: int = int(os.getenv("TAGS_MAX_ART", "15"))
+    tags_max_oracle: int = int(os.getenv("TAGS_MAX_ORACLE", "15"))
+    tags_threshold_art: int = int(
+        os.getenv("TAGS_THRESHOLD_ART", "70")
+    )  # 0-100 fuzzy score
+    tags_threshold_oracle: int = int(os.getenv("TAGS_THRESHOLD_ORACLE", "70"))
 
 
 @lru_cache(maxsize=1)
