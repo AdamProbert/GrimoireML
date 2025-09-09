@@ -42,10 +42,10 @@ def _build_prompt(user_text: str) -> str:
     for ex in FEW_SHOT:
         examples.append(f"Input: {ex['input']}\nIR JSON: {json.dumps(ex['ir'])}")
     # Include full Scryfall syntax: art:, atag:, arttag: for art tags; function:, otag:, oracletag: for Oracle tags; flavor:, pow/tou/loy/number, priceusd/priceeur/pricetix;
-    # categorical filters: layout:, lang:, artist:, watermark:, border:, frame:, reprint:, related:.
+    # categorical filters: layout:, lang:, artist:, watermark:, border:, frame:, reprint:.
     prompt_intro = (
         "Convert natural language about Magic: The Gathering cards into a strict JSON object matching the QueryIR schema. "
-        "Support Scryfall search syntax including art:, atag:, arttag:, function:, otag:, oracletag:, flavor:, pow/tou/loy/number, priceusd/priceeur/pricetix, layout:, lang:, artist:, watermark:, border:, frame:, reprint:, related:. "
+        "Support Scryfall search syntax including art:, atag:, arttag:, function:, otag:, oracletag:, flavor:, pow/tou/loy/number, priceusd/priceeur/pricetix, layout:, lang:, artist:, watermark:, border:, frame:, reprint:. "
         "Only output valid JSON, no explanations or prose. Unknown concepts should be ignored."
     )
     prompt = prompt_intro + "\n\n" + "\n\n".join(examples)

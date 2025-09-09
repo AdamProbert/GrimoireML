@@ -206,8 +206,6 @@ class ScryfallCompiler:
             self.parts.append(f"frame:{fr}")
         for rg in self.ir.reprint_groups:
             self.parts.append(f"reprint:{_quote_token(rg)}")
-        for rel in self.ir.related:
-            self.parts.append(f"related:{rel}")
 
     def _compile_mana_and_colors(self):
         # mana value
@@ -222,7 +220,7 @@ class ScryfallCompiler:
                 if invalid:
                     self.warnings.append(
                         f"ignoring invalid color codes: {','.join(invalid)}"
-                    )``
+                    )
                 kept = [c for c in self.ir.colors.set if c in VALID_COLORS]
                 if kept:
                     key = "id" if self.ir.colors.mode == "identity_only" else "c"

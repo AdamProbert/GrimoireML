@@ -75,7 +75,6 @@ class QueryIR(BaseModel):
     border: List[str] = []
     frame: List[str] = []
     reprint_groups: List[str] = []
-    related: List[str] = []
     art_tags: List[str] = []  # art:, atag:, arttag:
     oracle_tags: List[str] = []  # function:, otag:, oracletag:
     formats: List[Formats] = []
