@@ -3,8 +3,8 @@ import '@mantine/core/styles.css';
 import './globals.css';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import React from 'react';
+import { Exo_2, Inter, Uncial_Antiqua } from 'next/font/google';
 import InteractiveHeader from '../components/InteractiveHeader';
-import { Exo_2, Inter } from 'next/font/google';
 
 const headingFont = Exo_2({
   subsets: ['latin'],
@@ -13,6 +13,7 @@ const headingFont = Exo_2({
   weight: ['400', '500', '600', '700'],
 });
 const bodyFont = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
+const incantationFont = Uncial_Antiqua({ subsets: ['latin'], variable: '--font-incantation', display: 'swap', weight: ['400'] });
 
 export const metadata = {
   title: 'GrimoireML',
@@ -45,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/site.webmanifest" crossOrigin="use-credentials" />
       </head>
-      <body className={`${headingFont.variable} ${bodyFont.variable}`}>
+  <body className={`${headingFont.variable} ${bodyFont.variable} ${incantationFont.variable}`}>
         <MantineProvider defaultColorScheme="dark">
           <div className="flex flex-col min-h-screen" id="__app-shell">
             <InteractiveHeader />

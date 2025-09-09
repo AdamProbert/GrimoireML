@@ -30,6 +30,8 @@
   --gradient-ember: linear-gradient(90deg, var(--c-ember), var(--c-gold));
   --gradient-ember-muted: linear-gradient(90deg, #ff6f0099, #ffb30088);
   --gradient-fire-surface: linear-gradient(130deg, #1c1c1c 0%, #2c003e 55%, #1c1c1c 100%);
+  /* Incantation font fallback */
+  --font-incantation: 'UnifrakturCook', var(--font-heading), serif;
 
   --focus-ring: 0 0 0 1px var(--c-charcoal), 0 0 0 3px #ff6f0070;
 }
@@ -98,6 +100,29 @@ h6 {
     inset 0 0 0 1px rgba(255, 255, 255, 0.02),
     0 0 0 1px #000;
 }
+
+/* Example prompts styling */
+.example-prompts {
+  background: transparent; /* remove white box */
+  border: none;
+  padding: 0;
+}
+.example-prompts .prompt-item {
+  /* Use the site's default font and a subtle, readable style */
+  font-size: 1rem;
+  letter-spacing: 0.2px;
+  color: var(--color-text-primary);
+  transition: transform 150ms ease, background-color 150ms ease, box-shadow 150ms ease, color 150ms ease;
+  padding: 0.5rem 0.75rem;
+  display: block;
+  border-radius: 8px;
+  background: transparent;
+}
+.example-prompts .prompt-item:hover {
+  transform: translateY(-2px) scale(1.03);
+  color: var(--color-text-primary);
+}
+
 .panel-accent {
   position: relative;
 }
@@ -109,6 +134,9 @@ h6 {
   padding-top: 2px;
   background: var(--gradient-ember-muted);
   -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -145,6 +173,7 @@ h6 {
 .text-gradient-brand {
   background: var(--gradient-ember);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
 }
 
