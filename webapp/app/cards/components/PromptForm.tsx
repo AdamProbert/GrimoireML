@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { TextInput } from '@mantine/core';
+// icon removed per request
 
 interface PromptFormProps {
   value: string;
@@ -20,7 +21,11 @@ export const PromptForm: React.FC<PromptFormProps> = ({
   disabled,
 }) => {
   return (
-    <form onSubmit={onSubmit} className="flex gap-2 items-center">
+    <form
+      onSubmit={onSubmit}
+      className="flex gap-3 items-center justify-center w-full px-2 md:px-4"
+      style={{ maxWidth: '1200px', margin: '0 auto' }}
+    >
       <div className="relative flex-1">
         <TextInput
           value={value}
@@ -31,34 +36,37 @@ export const PromptForm: React.FC<PromptFormProps> = ({
             onChange(e.currentTarget.value);
           }}
           placeholder="e.g. cheap blue or green human creatures under 3 mana sorted by cost"
-          className="flex-1"
+          className="flex-1 text-lg"
           variant="filled"
           radius="sm"
-          size="md"
+          size="xl"
           disabled={disabled}
           styles={{
             input: {
               background: 'linear-gradient(135deg,#1f1a17 0%, #241810 100%)',
               color: 'var(--color-text-primary)',
-              border: '1px solid rgba(255,140,0,0.35)',
+              border: '1px solid rgba(255,140,0,0.45)',
               boxShadow:
-                '0 0 0 1px rgba(255,120,0,0.25), 0 0 8px -2px rgba(255,90,0,0.4) inset',
+                '0 0 0 1px rgba(255,120,0,0.35), 0 0 14px -4px rgba(255,120,0,0.55) inset',
               transition:
                 'border-color .18s ease, box-shadow .18s ease, background .25s ease',
               opacity: disabled ? 0.55 : 1,
               cursor: disabled ? 'not-allowed' : 'text',
               userSelect: disabled ? 'none' : 'text',
+              fontSize: '1.15rem',
+              padding: '1.05rem 1.15rem',
+              lineHeight: 1.35,
             },
             wrapper: { position: 'relative' },
           }}
           onFocus={(e) => {
             if (disabled) return;
             e.currentTarget.style.boxShadow =
-              '0 0 0 1px rgba(255,160,0,0.55), 0 0 10px 0 rgba(255,90,0,0.6) inset';
+              '0 0 0 1px rgba(255,170,0,0.65), 0 0 14px 2px rgba(255,120,0,0.65) inset';
           }}
           onBlur={(e) => {
             e.currentTarget.style.boxShadow =
-              '0 0 0 1px rgba(255,120,0,0.25), 0 0 8px -2px rgba(255,90,0,0.4) inset';
+              '0 0 0 1px rgba(255,120,0,0.35), 0 0 14px -4px rgba(255,120,0,0.55) inset';
           }}
         />
         {disabled && (
@@ -73,7 +81,8 @@ export const PromptForm: React.FC<PromptFormProps> = ({
       <button
         type="submit"
         disabled={disabled}
-        className="btn btn-primary whitespace-nowrap"
+        className="btn btn-primary whitespace-nowrap h-14 flex items-center px-5"
+        style={{ minHeight: '56px' }}
       >
         {disabled ? 'Consulting the grimoire…' : 'Search'}
       </button>

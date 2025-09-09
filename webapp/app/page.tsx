@@ -1,5 +1,4 @@
 'use client';
-import { Text } from '@mantine/core';
 import CardSearchClient from './cards/search-client';
 import Hero from '../components/Hero';
 import Image from 'next/image';
@@ -30,19 +29,16 @@ export default function HomePage() {
       }
     };
   }, [doReset]);
+
   return (
     <Hero hideDefaultHeader>
+      {/* Two layout states only: pre-search (centered) and searched/searching (title fixed near top) */}
       <div
-        className={`flex flex-col items-center w-full transition-all duration-500 ease-out ${
-          hasSearched ? 'pt-4 gap-4' : 'justify-center flex-grow py-12'
+        className={`flex flex-col items-center w-full min-h-[65vh] transition-[padding] duration-300 ease-out ${
+          hasSearched ? 'pt-4 gap-4' : 'justify-center py-12'
         }`}
-        style={{ minHeight: '70vh' }}
       >
-        <div
-          className={`flex justify-center w-full transition-all duration-500 ease-out ${
-            hasSearched ? 'mb-2' : 'mb-8'
-          }`}
-        >
+        <div className={`flex justify-center w-full ${hasSearched ? 'mb-2' : 'mb-6'}`}>
           <Image
             src={titleImage}
             alt="GrimoireML Title"
@@ -56,15 +52,13 @@ export default function HomePage() {
                 doReset();
               }
             }}
-            className={`h-auto drop-shadow-[0_0_16px_rgba(255,190,120,0.35)] transition-all duration-500 ease-out w-full ${
-              hasSearched
-                ? 'max-w-[300px] cursor-pointer'
-                : 'max-w-[640px] cursor-pointer'
-            } outline-none focus:ring-2 focus:ring-amber-400/60 rounded-md`}
+            className={`h-auto drop-shadow-[0_0_20px_rgba(255,190,120,0.4)] transition-all duration-300 ease-out w-full ${
+              hasSearched ? 'max-w-[360px]' : 'max-w-[768px]'
+            } cursor-pointer outline-none focus:ring-2 focus:ring-amber-400/60 rounded-md`}
           />
         </div>
         <div
-          className={`w-full mx-auto transition-all duration-500 ease-out ${
+          className={`w-full mx-auto flex-1 flex flex-col transition-[max-width] duration-300 ease-out ${
             hasSearched ? 'max-w-[1600px]' : 'max-w-3xl'
           }`}
         >

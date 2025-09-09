@@ -123,6 +123,51 @@ h6 {
   color: var(--color-text-primary);
 }
 
+/* Hover styles for mantine prompt button/text */
+.prompt-button {
+  background: transparent;
+}
+.prompt-button:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+.prompt-text {
+  transition: transform 200ms ease, text-shadow 200ms ease, font-size 200ms ease;
+  transform-origin: left center;
+  padding: 0.5rem; /* avoid clipping when scaling */
+}
+.prompt-fade-wrapper {
+  overflow: visible; /* allow scaled text to render outside container */
+}
+
+/* Ensure the button and surrounding containers don't clip scaled text */
+.prompt-button,
+.prompt-fade-wrapper,
+.example-prompts {
+  overflow: visible !important;
+}
+
+.prompt-text {
+  --prompt-font-base: 0.95rem;
+  font-size: var(--prompt-font-base);
+  line-height: 1.28;
+  transition: font-size 180ms ease, letter-spacing 180ms ease, text-shadow 220ms ease, padding 180ms ease;
+  display: inline-block;
+  padding: 0.25rem 0.25rem 0.25rem 0.9rem; /* left pad ensures growth room */
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.2px;
+}
+.prompt-button:hover .prompt-text,
+.prompt-button:focus-visible .prompt-text {
+  font-size: calc(var(--prompt-font-base) * 1.12); /* grow without transform to avoid clipping */
+  letter-spacing: 0.4px;
+  text-shadow:
+    0 4px 10px rgba(255,111,0,0.45),
+    0 10px 28px rgba(255,179,0,0.35),
+    0 18px 54px rgba(255,140,0,0.25);
+  padding-left: 1rem; /* subtle shift */
+}
+
 .panel-accent {
   position: relative;
 }
@@ -332,4 +377,11 @@ button.primary-fire:focus-visible {
   width: 2rem;
   height: 2rem;
   padding: 0;
+}
+
+/* Enlarged search layout utilities */
+.search-shell-xl {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }

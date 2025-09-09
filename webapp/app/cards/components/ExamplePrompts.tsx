@@ -1,5 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import quilIcon from '../../../assets/quill_icon_without_hexagon.png';
 import { Button, Transition, Text } from '@mantine/core';
 
 interface ExamplePromptsProps {
@@ -13,6 +15,11 @@ function selectExampleIndex(examples: string[], current: number) {
   // Always move forward (down) one step. If length <= 1 return current.
   if (!examples || examples.length <= 1) return current;
   return (current + 1) % examples.length;
+}
+
+function formatPrompt(p: string) {
+  if (!p) return p;
+  return p.endsWith('…') ? p : `${p}…`;
 }
 
 export default function ExamplePrompts({
@@ -69,39 +76,79 @@ export default function ExamplePrompts({
   return (
     <div className={`w-full ${className}`}>
       <div className="example-prompts">
-        <div className="flex items-center justify-center">
-          <Transition
-            mounted={visible}
-            transition="fade"
-            duration={transitionDuration}
-            timingFunction="ease"
+        <div className="flex items-center justify-start">
+          {/* Left: static icon column (persists while right side fades) */}
+          <div
+            style={{
+              flex: '0 0 64px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.5rem 0',
+            }}
           >
-            {(styles) => (
-              <div style={styles} className="w-full max-w-xl px-2">
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                position: 'relative',
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Image src={quilIcon} alt="try" width={48} height={48} />
+            </div>
+          </div>
+
+          {/* Right: fading area containing the button */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+            <Transition
+              mounted={visible}
+              transition="fade"
+              duration={transitionDuration}
+              timingFunction="ease"
+            >
+              {(styles) => (
+                <div style={styles} className="w-full prompt-fade-wrapper">
                   <Button
+                    className="prompt-button"
                     variant="subtle"
                     onClick={() => choose(index)}
-                    aria-label={`Try prompt: ${examples[index]}`}
+                    aria-label={`Try prompt: ${formatPrompt(examples[index])}`}
                     style={{
                       width: '100%',
-                      justifyContent: 'flex-start',
                       background: 'transparent',
                       color: 'var(--color-text-primary)',
                       fontFamily: 'inherit',
                       textAlign: 'left',
-                      padding: '0.5rem 0.75rem',
+                      padding: '0.6rem 0.6rem',
                       borderRadius: 8,
                       transition: 'transform 150ms ease',
                       transform: 'translateY(0)',
+                      display: 'flex',
+                      overflow: 'visible',
+                      alignItems: 'center',
                     }}
                   >
-                    <Text size="sm">{examples[index]}</Text>
+                    <div
+                      style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text size="sm" className="prompt-text">
+                        {formatPrompt(examples[index])}
+                      </Text>
+                    </div>
                   </Button>
                 </div>
-              </div>
-            )}
-          </Transition>
+              )}
+            </Transition>
+          </div>
         </div>
       </div>
     </div>
