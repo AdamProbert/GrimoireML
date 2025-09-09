@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
+import { Button, Transition, Text } from '@mantine/core';
 
 interface ExamplePromptsProps {
   examples?: string[];
@@ -9,14 +10,9 @@ interface ExamplePromptsProps {
 
 // Pick a next index from examples. Returns current when length <= 1.
 function selectExampleIndex(examples: string[], current: number) {
+  // Always move forward (down) one step. If length <= 1 return current.
   if (!examples || examples.length <= 1) return current;
-  let next = Math.floor(Math.random() * examples.length);
-  let attempts = 0;
-  while (next === current && attempts < 5) {
-    next = Math.floor(Math.random() * examples.length);
-    attempts += 1;
-  }
-  return next;
+  return (current + 1) % examples.length;
 }
 
 export default function ExamplePrompts({
@@ -37,14 +33,26 @@ export default function ExamplePrompts({
 }: ExamplePromptsProps) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [visible, setVisible] = useState(true);
   const intervalRef = useRef<number | null>(null);
+  const transitionDuration = 220;
+
+  // Auto-rotate sequentially with a fade-out / fade-in transition
+  const goNext = () => {
+    if (!examples || examples.length <= 1) return;
+    setVisible(false);
+    window.setTimeout(() => {
+      setIndex((current) => selectExampleIndex(examples, current));
+      // small timeout to allow DOM update before fading in
+      window.setTimeout(() => setVisible(true), 10);
+    }, transitionDuration);
+  };
 
   useEffect(() => {
-    // auto-rotate every 3s
     if (intervalRef.current) window.clearInterval(intervalRef.current);
     if (!paused && examples.length > 0) {
       intervalRef.current = window.setInterval(() => {
-        setIndex((current) => selectExampleIndex(examples, current));
+        goNext();
       }, 3000);
     }
     return () => {
@@ -52,7 +60,7 @@ export default function ExamplePrompts({
     };
   }, [paused, examples.length]);
 
-  const choose = (i: number, e?: React.MouseEvent<HTMLButtonElement>) => {
+  const choose = (i: number) => {
     const p = examples[i];
     onChooseAndSubmit(p);
     setIndex(i);
@@ -60,29 +68,40 @@ export default function ExamplePrompts({
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="relative example-prompts">
-        {/* Carousel wrapper - shows one item at a time, minimal surface */}
-        <div className="overflow-hidden">
-          <div
-            className="flex w-full transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${index * 100}%)` }}
+      <div className="example-prompts">
+        <div className="flex items-center justify-center">
+          <Transition
+            mounted={visible}
+            transition="fade"
+            duration={transitionDuration}
+            timingFunction="ease"
           >
-            {examples.map((ex, i) => (
-              <div
-                key={ex}
-                className="flex-shrink-0 w-full p-2 flex items-center justify-center"
-                aria-hidden={i !== index}
-              >
-                <button
-                  onClick={(e) => choose(i, e)}
-                  aria-label={`Use example: ${ex}`}
-                  className={`text-center w-full text-sm sm:text-base leading-snug prompt-item relative overflow-hidden text-white transition-transform duration-150 ease-out transform hover:scale-105 hover:bg-white/6 rounded`}
-                >
-                  <span className="prompt-inner">{ex}</span>
-                </button>
+            {(styles) => (
+              <div style={styles} className="w-full max-w-xl px-2">
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant="subtle"
+                    onClick={() => choose(index)}
+                    aria-label={`Try prompt: ${examples[index]}`}
+                    style={{
+                      width: '100%',
+                      justifyContent: 'flex-start',
+                      background: 'transparent',
+                      color: 'var(--color-text-primary)',
+                      fontFamily: 'inherit',
+                      textAlign: 'left',
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: 8,
+                      transition: 'transform 150ms ease',
+                      transform: 'translateY(0)',
+                    }}
+                  >
+                    <Text size="sm">{examples[index]}</Text>
+                  </Button>
+                </div>
               </div>
-            ))}
-          </div>
+            )}
+          </Transition>
         </div>
       </div>
     </div>
