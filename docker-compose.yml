@@ -58,6 +58,7 @@ services:
       # Pass through host OPENAI_API_KEY; ensure it's exported before compose up
       OPENAI_API_KEY: ${OPENAI_API_KEY:?set OPENAI_API_KEY environment variable}
       REDIS_URL: "redis://redis:6379/0"
+      OPEN_AI_MODEL: gpt-5-mini
     depends_on:
       redis:
         condition: service_healthy
