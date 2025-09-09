@@ -65,14 +65,23 @@ class ScryfallCompiler:
         self.warnings: List[str] = []
 
     def compile(self) -> tuple[str, list[str]]:
-        # Compile each IR section into Scryfall tokens
-        self._compile_entity()
+        # Compile each IR section into Scryfall tokens (each concern in its own method)
+        self._compile_card_types()
+        self._compile_subtypes()
+        self._compile_supertypes()
         self._compile_text_filters()
         self._compile_name_filters()
         self._compile_oracle_filters()
         self._compile_flavor_filters()
-        self._compile_tags()
-        self._compile_numeric()
+        self._compile_art_tags()
+        self._compile_oracle_tags()
+        self._compile_power()
+        self._compile_toughness()
+        self._compile_loyalty()
+        self._compile_card_number()
+        self._compile_price_usd()
+        self._compile_price_eur()
+        self._compile_price_tix()
         self._compile_categorical()
         self._compile_mana_and_colors()
         self._compile_release_date()
@@ -82,37 +91,26 @@ class ScryfallCompiler:
         self._compile_sort()
         return " ".join(self.parts).strip(), self.warnings
 
-    def _compile_entity(self):
-        ent = self.ir.entity
-        if not (
-            ent.card_types
-            or ent.subtypes
-            or ent.supertypes
-            or ent.name_contains
-            or ent.oracle_text_contains
-        ):
-            self.warnings.append(
-                "entity has no constraints (no types, names, or oracle filters)"
-            )
-        for t in ent.card_types:
+    def _compile_card_types(self):
+        for t in self.ir.entity.card_types:
             if not t:
                 self.warnings.append("ignoring empty card_type token")
                 continue
             self.parts.append(f"t:{_quote_token(t)}")
-        for st in ent.subtypes:
+
+    def _compile_subtypes(self):
+        for st in self.ir.entity.subtypes:
             if not st:
                 self.warnings.append("ignoring empty subtype token")
                 continue
             self.parts.append(f"t:{_quote_token(st)}")
-        for sp in ent.supertypes:
+
+    def _compile_supertypes(self):
+        for sp in self.ir.entity.supertypes:
             if not sp:
                 self.warnings.append("ignoring empty supertype token")
                 continue
             self.parts.append(f"t:{_quote_token(sp)}")
-        for n in ent.name_contains:
-            self.parts.append(f"name:{_quote_token(n)}")
-        for o in ent.oracle_text_contains:
-            self.parts.append(f"o:{_quote_token(o)}")
 
     def _compile_text_filters(self):
         # name_contains and oracle_text_contains from entity
@@ -145,34 +143,48 @@ class ScryfallCompiler:
         for fn in self.ir.flavor_text_not:
             self.parts.append(f"-flavor:{_quote_token(fn)}")
 
-    def _compile_tags(self):
+    def _compile_art_tags(self):
         art_set = sorted({(at or "").lower() for at in self.ir.art_tags if at})
-        oracle_set = sorted({(ot or "").lower() for ot in self.ir.oracle_tags if ot})
         for at in art_set:
             self.parts.append(f"arttag:{_quote_token(at)}")
+
+    def _compile_oracle_tags(self):
+        oracle_set = sorted({(ot or "").lower() for ot in self.ir.oracle_tags if ot})
         for ot in oracle_set:
             self.parts.append(f"otag:{_quote_token(ot)}")
 
-    def _compile_numeric(self):
-        # numeric comparisons: power, toughness, loyalty, card number, prices
+    # --- Numeric component compilers ---
+    def _compile_power(self):
         if self.ir.power:
             self.parts.append(f"pow{self.ir.power.op}{self.ir.power.value}")
+
+    def _compile_toughness(self):
         if self.ir.toughness:
             self.parts.append(f"tou{self.ir.toughness.op}{self.ir.toughness.value}")
+
+    def _compile_loyalty(self):
         if self.ir.loyalty:
             self.parts.append(f"loy{self.ir.loyalty.op}{self.ir.loyalty.value}")
+
+    def _compile_card_number(self):
         if self.ir.card_number:
             self.parts.append(
                 f"number{self.ir.card_number.op}{self.ir.card_number.value}"
             )
+
+    def _compile_price_usd(self):
         if self.ir.price_usd:
             self.parts.append(
                 f"priceusd{self.ir.price_usd.op}{self.ir.price_usd.value}"
             )
+
+    def _compile_price_eur(self):
         if self.ir.price_eur:
             self.parts.append(
                 f"priceeur{self.ir.price_eur.op}{self.ir.price_eur.value}"
             )
+
+    def _compile_price_tix(self):
         if self.ir.price_tix:
             self.parts.append(
                 f"pricetix{self.ir.price_tix.op}{self.ir.price_tix.value}"
@@ -210,7 +222,7 @@ class ScryfallCompiler:
                 if invalid:
                     self.warnings.append(
                         f"ignoring invalid color codes: {','.join(invalid)}"
-                    )
+                    )``
                 kept = [c for c in self.ir.colors.set if c in VALID_COLORS]
                 if kept:
                     key = "id" if self.ir.colors.mode == "identity_only" else "c"
