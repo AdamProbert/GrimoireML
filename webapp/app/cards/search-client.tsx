@@ -6,6 +6,7 @@ import PromptForm from './components/PromptForm';
 import QueryPartsChips from './components/QueryPartsChips';
 import SearchFeedback from './components/SearchFeedback';
 import ResultsSection from './components/ResultsSection';
+import ExamplePrompts from './components/ExamplePrompts';
 import { useDelayedBusy } from './hooks/useDelayedBusy';
 
 /**
@@ -45,6 +46,9 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
   // Shadow copy of last committed search results (cleared immediately on edit)
   const [displayCards, setDisplayCards] = useState<typeof results>([]);
   const [executedPrompt, setExecutedPrompt] = useState('');
+  // Show example prompts only on first entry to the page. Once hidden it stays hidden
+  // until the page is fully remounted (e.g. navigating away/back to home).
+  const [showExamples, setShowExamples] = useState(true);
   const dirty = prompt !== executedPrompt;
 
   // Whenever prompt diverges from last executed prompt -> immediate clean reset
@@ -95,6 +99,8 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
     if (!prompt.trim()) {
       return;
     }
+    // If the user submits manually (not via an example click), hide the examples forever
+    if (showExamples) setShowExamples(false);
     if (!firstSearchPerformedRef.current) {
       firstSearchPerformedRef.current = true;
       onFirstSearch?.();
@@ -113,6 +119,16 @@ export default function CardSearchClient({ onFirstSearch }: CardSearchClientProp
         onSubmit={handleSubmit}
         disabled={activeBusy || loaderActive}
       />
+      {/* Example prompts carousel - show only on first visit; hide after any submit */}
+      {showExamples && (
+        <div className="flex-shrink-0">
+          <ExamplePrompts
+            onChooseAndSubmit={(p) => {
+              setPrompt(p);
+            }}
+          />
+        </div>
+      )}
       <SearchFeedback error={error} warnings={parseWarnings} />
 
       {/* Chips area (flex-shrink) */}
