@@ -5,19 +5,14 @@
 Grimoire ML is an AI-assisted Magic: The Gathering card discovery and deckbuilding web application.
 
 ---
-This mono-repo contains three core services, a monitoring stack, plus local orchestration:
+This mono-repo contains four core services, a monitoring stack, plus local orchestration:
 
-- `backend/` — FastAPI backend (API, image caching, future DB/vector store integrations)
+- `backend/` — FastAPI backend (Slowly splitting this out into dedicated seperate services)
 - `query/` — FastAPI NL→IR→Scryfall query microservice (OpenAI + Redis caching)
-- `webapp/` — Next.js (App Router) React frontend (card browsing & deckbuilder UI)
+- `card-db/` — FastAPI card image proxy with Redis caching and Prometheus metrics
+- `webapp/` — Next.js 15 (TypeScript), React 18, Tailwind CSS, Mantine UI
 - `monitoring/` — Prometheus metrics and Grafana dashboards configuration
 - `docker-compose.yml` — development compose wiring Postgres, Redis, backend, query, frontend, Prometheus, and Grafana
-
-Quick overview
-
-- Frontend: Next.js 15 (TypeScript), React 18, Tailwind CSS, Mantine UI
-- Backend: FastAPI, Pydantic, async database init (placeholder), image proxy & health endpoints
-- Query Service: FastAPI + OpenAI (Chat) parsing, Redis caching, deterministic compiler
 
 Using just (optional)
 
@@ -60,7 +55,8 @@ Running locally (recommended)
 
 - Frontend: <http://localhost:3000>
 - Backend: <http://localhost:8000> (Swagger: `/docs`)
-- Query Service: <http://localhost:8080> (Swagger: `/docs`)
+ - Query Service: <http://localhost:8080> (Swagger: `/docs`)
+ - Card DB Service: <http://localhost:8081> (Swagger: `/docs`)
 - Prometheus: <http://localhost:9090>
 - Grafana: <http://localhost:3001>
 
